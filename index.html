@@ -36,7 +36,19 @@
             justify-content: flex-start;
             align-items: center;
             min-height: 100vh;
+            /* 适配移动端 100vh 问题 */
+            min-height: -webkit-fill-available;
             padding: 20px;
+            transition: padding 0.3s;
+        }
+
+        body.view-mobile {
+            padding: 0;
+            background-color: #fff;
+        }
+
+        html {
+            height: -webkit-fill-available;
         }
 
         /* 顶部切换开关 */
@@ -495,14 +507,17 @@
         /* 强制手机端布局逻辑 */
         .view-mobile .app-container {
             flex-direction: column;
-            max-width: 500px;
+            width: 100%;
+            max-width: none;
             border-radius: 0;
             box-shadow: none;
+            border: none;
+            min-height: 100vh;
         }
 
         .view-mobile .calendar-main {
             border-right: none;
-            padding: 20px 15px;
+            padding: 15px 10px;
             display: flex;
             flex-direction: column;
         }
@@ -538,19 +553,20 @@
             justify-content: center;
         }
 
-        .view-mobile .weekdays { order: 4; }
-        .view-mobile .calendar-grid { order: 5; }
+        .view-mobile .weekdays { order: 4; margin-bottom: 10px; }
+        .view-mobile .calendar-grid { order: 5; border-left: none; border-right: none; }
 
         .view-mobile .sidebar {
             width: 100%;
-            padding: 20px 15px;
+            padding: 15px 10px;
             border-top: 1px solid var(--border-color);
             order: 6;
+            background: #fdfdfd;
         }
 
         .view-mobile .day-cell {
-            min-height: 70px;
-            padding: 4px;
+            min-height: 60px;
+            padding: 4px 2px;
         }
 
         .view-mobile .day-num { font-size: 1rem; }
