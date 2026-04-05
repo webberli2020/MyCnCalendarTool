@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,11 +17,16 @@
             --text-sec: #7f8c8d;
             --text-light: #bdc3c7;
             --border-color: #f0f0f0;
-            --shadow: 0 20px 40px rgba(0,0,0,0.03);
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
             --transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
             background-color: var(--bg-color);
@@ -40,7 +46,7 @@
             box-shadow: var(--shadow);
             display: flex;
             overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.02);
+            border: 1px solid rgba(0, 0, 0, 0.02);
         }
 
         /*================ 左侧日历主体 ================*/
@@ -75,7 +81,7 @@
             align-items: center;
         }
 
-        .year-select {
+        .year-select, .month-select {
             border: none;
             background: transparent;
             font-size: 1.1rem;
@@ -89,9 +95,16 @@
             transition: var(--transition);
         }
 
-        .year-select:hover {
+        .year-select:hover, .month-select:hover {
             background: #f0f0f0;
             color: var(--text-main);
+        }
+
+        .date-status {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-left: 15px;
+            font-weight: 400;
         }
 
         .nav-controls {
@@ -114,13 +127,20 @@
             transition: var(--transition);
         }
 
-        .btn-icon:hover { background: #e0e0e0; color: #333; }
-        
+        .btn-icon:hover {
+            background: #e0e0e0;
+            color: #333;
+        }
+
         .btn-today {
             background: var(--text-main);
             color: white;
         }
-        .btn-today:hover { background: #1a252f; color: white; }
+
+        .btn-today:hover {
+            background: #1a252f;
+            color: white;
+        }
 
         .weekdays {
             display: grid;
@@ -134,7 +154,7 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
-        
+
         .weekday.weekend {
             color: var(--primary-red);
         }
@@ -142,8 +162,10 @@
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 1px; /* Gap for grid lines */
-            background-color: var(--border-color); /* Grid line color */
+            gap: 1px;
+            /* Gap for grid lines */
+            background-color: var(--border-color);
+            /* Grid line color */
             border: 1px solid var(--border-color);
         }
 
@@ -155,7 +177,8 @@
             justify-content: flex-start;
             cursor: pointer;
             transition: var(--transition);
-            background: white; /* Cell background */
+            background: white;
+            /* Cell background */
             position: relative;
             overflow: hidden;
         }
@@ -179,8 +202,15 @@
         .lunar-info {
             font-size: 0.75rem;
             font-weight: 500;
-            color: var(--text-sec);
+            color: #000;
+            /* 改为黑色 */
             margin-bottom: 4px;
+        }
+
+        .lunar-info.jieqi,
+        .lunar-info.chuyi {
+            font-weight: bold;
+            /* 节气和初一加粗 */
         }
 
         .holiday-list {
@@ -201,13 +231,38 @@
             width: fit-content;
             max-width: 100%;
         }
-        
+
         /* Specific Holiday Styles */
-        .tag-china { background: #ff0000; color: #ffff00; } /* China: Red/Yellow */
-        .tag-us { background: #0000ff; color: #ffffff; }    /* US: Blue/White */
-        .tag-brazil { background: #008000; color: #ffff00; } /* Brazil: Green/Yellow */
-        .tag-birthday { background: #ff69b4; color: #ffffff; } /* Birthday: Pink/White */
-        .tag-memorial { background: #000000; color: #ffffff; } /* Memorial: Black/White */
+        .tag-china {
+            background: #ff0000;
+            color: #ffff00;
+        }
+
+        /* China: Red/Yellow */
+        .tag-us {
+            background: #0000ff;
+            color: #ffffff;
+        }
+
+        /* US: Blue/White */
+        .tag-brazil {
+            background: #008000;
+            color: #ffff00;
+        }
+
+        /* Brazil: Green/Yellow */
+        .tag-birthday {
+            background: #ff69b4;
+            color: #ffffff;
+        }
+
+        /* Birthday: Pink/White */
+        .tag-memorial {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        /* Memorial: Black/White */
 
         .day-cell.other-month {
             opacity: 0.25;
@@ -230,8 +285,9 @@
 
         /* 选中态 */
         .day-cell.selected {
-            background: #fffde7; /* 浅黄色 */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            background: #fffde7;
+            /* 浅黄色 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             z-index: 2;
         }
 
@@ -292,22 +348,65 @@
             font-size: 0.95rem;
         }
 
-        .detail-lbl { color: var(--text-sec); }
-        .detail-val { font-weight: bold; color: var(--text-main); }
-        .detail-festivals { 
-            color: var(--primary-red); 
-            font-weight: 800; 
-            text-align: right; 
-            max-width: 65%; 
-            line-height: 1.4; 
-            font-size: 1.1rem; 
+        .detail-lbl {
+            color: var(--text-sec);
+            white-space: nowrap;
+            /* 不换行 */
+            min-width: 45px;
+            /* 确保对齐 */
+        }
+
+        .detail-val {
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .detail-festivals {
+            color: var(--text-main);
+            font-weight: 500;
+            text-align: left;
+            max-width: 100%;
+            line-height: 1.6;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            /* 节日之间的间距 */
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .side-fest-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+            /* 移除序号后的间距调节 */
+        }
+
+        .side-fest-content {
+            flex: 1;
+        }
+
+        .side-fest-desc {
+            color: #000000;
+            font-size: 0.8rem;
+            margin-left: 2px;
+            display: inline;
+        }
+
+        .side-fest-anniv {
+            color: #000000;
+            font-weight: bold;
+            display: inline;
+            margin-left: 5px;
         }
 
         /* 黄历宜忌模块 */
         .almanac {
             display: flex;
             gap: 12px;
-            margin-top: 20px; /* 向下移 */
+            margin-top: 20px;
+            /* 向下移 */
             margin-bottom: auto;
         }
 
@@ -332,16 +431,27 @@
             margin-bottom: 10px;
         }
 
-        .almanac-col.yi .almanac-title { color: var(--primary-red); }
-        .almanac-col.ji .almanac-title { color: var(--text-sec); }
+        .almanac-col.yi .almanac-title {
+            color: var(--primary-red);
+        }
+
+        .almanac-col.ji .almanac-title {
+            color: var(--text-sec);
+        }
 
         .almanac-txt {
             font-size: 0.8rem;
             line-height: 1.5;
         }
 
-        .almanac-col.yi .almanac-txt { color: var(--primary-red); font-weight: 500; }
-        .almanac-col.ji .almanac-txt { color: var(--text-sec); }
+        .almanac-col.yi .almanac-txt {
+            color: var(--primary-red);
+            font-weight: 500;
+        }
+
+        .almanac-col.ji .almanac-txt {
+            color: var(--text-sec);
+        }
 
         /* 页脚 */
         .footer {
@@ -353,577 +463,797 @@
         }
 
         @media (max-width: 950px) {
-            .app-container { flex-direction: column; max-width: 600px; }
-            .calendar-main { border-right: none; padding: 30px 20px; }
-            .sidebar { width: 100%; padding: 30px 20px; border-top: 1px solid var(--border-color); }
+            .app-container {
+                flex-direction: column;
+                max-width: 600px;
+            }
+
+            .calendar-main {
+                border-right: none;
+                padding: 30px 20px;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 30px 20px;
+                border-top: 1px solid var(--border-color);
+            }
         }
 
         @media (max-width: 500px) {
-            .month-lbl { font-size: 2.2rem; }
-            .day-cell { padding: 6px; border-radius: 8px; }
-            .day-num { font-size: 1.1rem; }
-            .lunar-info { font-size: 0.7rem; }
-            .holiday-list { display: none; } /* 移动端过小隐藏节日徽章，通过侧栏查看 */
+            .month-lbl {
+                font-size: 2.2rem;
+            }
+
+            .day-cell {
+                padding: 6px;
+                border-radius: 8px;
+            }
+
+            .day-num {
+                font-size: 1.1rem;
+            }
+
+            .lunar-info {
+                font-size: 0.7rem;
+            }
+
+            .holiday-list {
+                display: none;
+            }
+
+            /* 移动端过小隐藏节日徽章，通过侧栏查看 */
         }
     </style>
 </head>
+
 <body>
 
-<div class="app-container">
-    <div class="calendar-main">
-        <header class="calendar-header">
-            <div class="month-year">
-                <span class="month-lbl" id="topMonth">4月</span>
-                <div class="year-lbl-box">
-                    <select id="yearSelect" class="year-select"></select>
+    <div class="app-container">
+        <div class="calendar-main">
+            <header class="calendar-header">
+                <div class="month-year">
+                    <select id="monthSelect" class="month-select" onchange="engine.changeMonth(parseInt(this.value) - engine.viewDate.getMonth())"></select>
+                    <select id="yearSelect" class="year-select" onchange="engine.viewDate.setFullYear(parseInt(this.value)); engine.render();"></select>
+                    <div id="dateStatus" class="date-status"></div>
+                </div>
+                <div class="nav-controls">
+                    <button class="btn-icon" onclick="engine.changeMonth(-12)">＜＜</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(-1)">＜</button>
+                    <button class="btn-icon btn-today" onclick="engine.goToday()">今天</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(1)">＞</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(12)">＞＞</button>
+                </div>
+            </header>
+
+            <div class="weekdays" id="weekHeaders">
+                <!-- 动态生成星期表头 -->
+            </div>
+
+            <div class="calendar-grid" id="gridBody">
+                <!-- 动态生成日期格子 -->
+            </div>
+        </div>
+
+        <!-- 右侧详情 -->
+        <aside class="sidebar">
+            <div class="big-date-section">
+                <div class="big-day" id="sideDayNum">05</div>
+                <div class="side-week" id="sideWeekday">星期日</div>
+                <div class="side-full-date" id="sideFullDate">2026年4月5日</div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-row">
+                    <span class="detail-lbl">农历</span>
+                    <span class="detail-val" id="sideLunar">二月十八</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-lbl">干支</span>
+                    <span class="detail-val" id="sidePillars">丙午年 庚辰月 己卯日</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-lbl">生肖</span>
+                    <span class="detail-val" id="sideZodiac">马 🐴</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-lbl">节日</span>
+                    <span class="detail-festivals" id="sideFestivals">无节日</span>
                 </div>
             </div>
-            <div class="nav-controls">
-                <button class="btn-icon" onclick="engine.changeMonth(-12)">«</button>
-                <button class="btn-icon" onclick="engine.changeMonth(-1)">‹</button>
-                <button class="btn-icon btn-today" onclick="engine.goToday()">本月</button>
-                <button class="btn-icon" onclick="engine.changeMonth(1)">›</button>
-                <button class="btn-icon" onclick="engine.changeMonth(12)">»</button>
+
+            <div class="almanac">
+                <div class="almanac-col yi">
+                    <div class="almanac-title">宜</div>
+                    <div class="almanac-txt" id="sideYi">解除 动土 安床 祭祀</div>
+                </div>
+                <div class="almanac-col ji">
+                    <div class="almanac-title">忌</div>
+                    <div class="almanac-txt" id="sideJi">嫁娶 出行 入宅 安葬</div>
+                </div>
             </div>
-        </header>
 
-        <div class="weekdays" id="weekHeaders">
-            <!-- 动态生成星期表头 -->
-        </div>
-
-        <div class="calendar-grid" id="gridBody">
-            <!-- 动态生成日期格子 -->
-        </div>
+            <div class="footer">极简万年历 · 匠心打造</div>
+        </aside>
     </div>
 
-    <!-- 右侧详情 -->
-    <aside class="sidebar">
-        <div class="big-date-section">
-            <div class="big-day" id="sideDayNum">05</div>
-            <div class="side-week" id="sideWeekday">星期日</div>
-            <div class="side-full-date" id="sideFullDate">2026年4月5日</div>
-        </div>
-
-        <div class="detail-card">
-            <div class="detail-row">
-                <span class="detail-lbl">农历</span>
-                <span class="detail-val" id="sideLunar">二月十八</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-lbl">干支</span>
-                <span class="detail-val" id="sidePillars">丙午年 庚辰月 己卯日</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-lbl">生肖</span>
-                <span class="detail-val" id="sideZodiac">马 🐴</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-lbl">节日</span>
-                <span class="detail-festivals" id="sideFestivals">无节日</span>
-            </div>
-        </div>
-
-        <div class="almanac">
-            <div class="almanac-col yi">
-                <div class="almanac-title">宜</div>
-                <div class="almanac-txt" id="sideYi">解除 动土 安床 祭祀</div>
-            </div>
-            <div class="almanac-col ji">
-                <div class="almanac-title">忌</div>
-                <div class="almanac-txt" id="sideJi">嫁娶 出行 入宅 安葬</div>
-            </div>
-        </div>
-
-        <div class="footer">极简万年历 · 匠心打造</div>
-    </aside>
-</div>
-
-<script>
-/**
- * 配置选项
- */
-const CONFIG = {
-    START_MONDAY: true,        // 默认每周第一天是周一
-    ZODIAC_BY_LICHUN: false,   // 生肖切换：false=以春节切换；true=以立春切换
-    SHOW_OTHER_MONTH_DAYS: false // 是否显示非本月日期预览
-};
-
-/**
- * 全球节假日数据库
- */
-const holidayDB = {
- "中国": { 
-     css: "tag-china", prefix: "中·", 
-     FixedGregorian: { 
-        "01-01":"元旦",
-        "03-08":"妇女节",
-        "05-01":"劳动节",
-        "05-04":"青年节",
-        "06-01":"儿童节",
-        "07-01":"建党节",
-        "08-01":"建军节",
-        "08-08":"台湾父亲节",
-        "09-03":"抗战胜利日(抗日战争胜利纪念日)",
-        "09-09":"毛泽东忌日",
-        "09-10":"教师节",
-        "09-30":"烈士纪念日",
-        "10-01":"国庆节",
-        "12-13":"国家公祭日🕯(南京大屠杀死难者国家公祭日)",
-        "12-26":"毛泽东🎂"	
-    },
-    MyFixedGregorian:{
-    	"1947-01-05":"YXR公历🎂",
-        "1973-02-18":"LWB公历🎂",
-        "1973-06-08":"ZXJ🎂",
-        "2023-07-10":"ZGZ公历忌日🕯",
-        "2001-10-04":"QQ🎂",
-        "2006-10-08":"ZZ🎂",
-        "1945-10-29":"WJY公历🎂",
-        "2025-11-01":"XSJ忌日🕯",
-        "1998-11-06":"结婚纪念日🎂",
-        "2020-11-14":"LK公历忌日🕯",
-        "1978-12-12":"ZMM🎂"
-    },
-    FixedLunar:{
-        "1-1":"春节/鸡日(这一天不能杀鸡，也不能打骂孩子，以求吉利。)",
-        "1-2":"犬日(祭祀狗神，感谢狗的看家护院之恩。)",
-        "1-3":"猪日(传说中这是女娲造猪的日子。)",
-        "1-4":"羊日/接神日(传说女娲造羊的日子。)",
-        "1-5":"牛日/破五(破除倒垃圾等禁忌，迎财神。)",
-        "1-6":"马日(寓意马到成功。)",
-        "1-7":"人日(全人类共同的生日。)",
-        "1-8":"谷日(谷子的生日。)",
-        "1-9":"天日(玉皇大帝诞辰。)",
-        "1-10":"地日(石头的生日。)",
-        "1-15":"元宵节(又名上元节——天官赐福。)",
-        "2-2":"龙抬头",
-        "3-3":"上巳节(古人情人节与游春节。)",
-        "5-5":"端午节",
-        "7-7":"七夕节",
-        "7-15":"中元节(鬼节——地官赦罪。)",
-        "8-15":"中秋节",
-        "9-9":"重阳节",
-        "10-1":"寒衣节",
-        "10-15":"下元节(水官大帝诞辰。)",
-        "12-8":"腊八节",
-        "12-23":"北方小年",
-        "12-24":"南方小年"
-    },
-    MyFixedLunar:{
-        "1-16":"LWB农历🎂",
-        "5-8":"ZXJ农历🎂",
-        "8-18":"QQ农历🎂",
-        "9-24":"WJY农历🎂",
-        "9-29":"LK农历忌日🕯",
-        "12-14":"YXR农历🎂"
-	},
-    variable: { 
-        "2025": { "03-04":"政协开幕", "03-05":"人大开幕", "03-10":"政协闭幕", "03-11":"人大闭幕" },
-		"2026": { "03-04":"政协开幕", "03-05":"人大开幕", "03-11":"政协闭幕", "03-12":"人大闭幕"}	
-	} 
- },
- "巴西": { 
-	     css: "tag-green", prefix: "巴·", 
-	     FixedGregorian: { 
-            "01-01":"元旦/世界和平日",
-            "03-08":"国际妇女节",
-            "04-21":"蒂拉登特斯",
-            "05-01":"劳动节",
-            "09-07":"独立日",
-            "10-12":"阿帕雷西达圣母日",
-            "10-31":"萨西节",
-            "11-02":"万灵节",
-            "11-15":"共和国宣言日",
-            "12-25":"圣诞节" 
-        }
- },
- "美国": { 
-	     css: "tag-blue", prefix: "美·", 
-	     FixedGregorian: { 
-            "01-01":"新年(New Year's Day)",
-            "02-14":"情人节(Valentine's Day)",
-            "04-01":"愚人节(April Fools' Day)",
-            "06-19":"六月节(Juneteenth)",
-            "07-04":"独立日(Independence Day)",
-            "10-31":"万圣节(Halloween)",
-            "11-11":"退伍军人节 (Veterans Day)",
-            "12-24":"平安夜(Christmas Eve)",
-            "12-25":"圣诞节(Christmas Day)",
-            "03-31":"查韦斯日(Cesar Chavez Day)",
-            "04-24":"种族灭绝纪念",
-            "09-09":"加州入美纪念日" 
-        }
- 	}
-};
-
-const ZODIAC_EMOJI = {"鼠":"🐭", "牛":"🐮", "虎":"🐯", "兔":"🐇", "龙":"🐉", "蛇":"🐍", "马":"🐴", "羊":"🐑", "猴":"🐵", "鸡":"🐓", "狗":"🐶", "猪":"🐷"};
-
-class CalendarEngine {
-    constructor() {
-        this.viewDate = new Date();
-        this.selectedDate = new Date(); // 默认选中今天
-        this.initYearSelect();
-        this.render();
-    }
-
-    initYearSelect() {
-        const select = document.getElementById('yearSelect');
-        for (let y = 1900; y <= 2100; y++) {
-            const opt = document.createElement('option');
-            opt.value = y;
-            opt.innerText = y + '年';
-            select.appendChild(opt);
-        }
-        select.onchange = (e) => {
-            this.viewDate.setFullYear(parseInt(e.target.value));
-            this.render();
+    <script>
+        /**
+         * 配置选项
+         */
+        const CONFIG = {
+            START_MONDAY: true,        // 默认每周第一天是周一
+            ZODIAC_BY_LICHUN: false,   // 生肖切换：false=以春节切换；true=以立春切换
+            SHOW_OTHER_MONTH_DAYS: false // 是否显示非本月日期预览
         };
-    }
 
-    changeMonth(step) {
-        this.viewDate.setMonth(this.viewDate.getMonth() + step);
-        this.render();
-    }
+        /**
+         * 全球节假日数据库
+         */
+        const holidayDB = {
+            "中国": {
+                css: "tag-china", prefix: "中·",
+                FixedGregorian: {
+                    "01-01": "元旦",
+                    "03-08": "妇女节",
+                    "05-01": "劳动节",
+                    "1919-05-04": "青年节",
+                    "06-01": "儿童节",
+                    "1921-07-01": "建党节",
+                    "1927-08-01": "建军节",
+                    "08-08": "台湾父亲节",
+                    "1945-09-03": "抗战胜利日(抗日战争胜利纪念日)",
+                    "1976-09-09": "毛泽东忌日",
+                    "09-10": "教师节",
+                    "09-30": "烈士纪念日",
+                    "1949-10-01": "国庆节",
+                    "12-13": "国家公祭日🕯(南京大屠杀死难者国家公祭日)",
+                    "1893-12-26": "毛泽东🎂"
+                },
+                MyFixedGregorian: {
+                    "1947-01-05": "YXR公历🎂",
+                    "1973-02-18": "LWB公历🎂",
+                    "1973-06-08": "ZXJ🎂",
+                    "2023-07-10": "ZGZ公历忌日🕯",
+                    "2001-10-04": "QQ🎂",
+                    "2006-10-08": "ZZ🎂",
+                    "1945-10-29": "WJY公历🎂",
+                    "2025-11-01": "XSJ忌日🕯",
+                    "1998-11-06": "结婚纪念日🎂",
+                    "2020-11-14": "LK公历忌日🕯",
+                    "1978-12-12": "ZMM🎂"
+                },
+                FixedLunar: {
+                    "1-1": "春节/鸡日(这一天不能杀鸡，也不能打骂孩子，以求吉利。古人会在门上贴鸡画，用其象征吉祥和驱邪。)",
+                    "1-2": "犬日(祭祀狗神，感谢狗的看家护院之恩。在民俗中，这也是出嫁女儿“回门”、夫婿同行“迎婿日”的日子。)",
+                    "1-3": "猪日(传说中这是女娲造猪的日子。民间有“初一早，初二早，初三睡到饱”的说法，因为这一天通常被认为是容易发生口角争执，所以老一辈讲究不外出拜年，宜在家补觉休息。)",
+                    "1-4": "羊日/接神日(传说女娲造羊的日子。这一天也是民间迎接灶神回人间、清点全家人口的日子，所以也叫“接神日”)",
+                    "1-5": "牛日/破五(之前的禁忌如不能倒垃圾、不能动针线在这一天破除。同时，这是迎财神、送穷神的日子，商店通常在这一天开市。)",
+                    "1-6": "马日(寓意“马到成功”。在这一天，人们开始正式下田春耕或外出务工，商家也会清理门市，准备正式营业。)",
+                    "1-7": "人日(女娲创造万物时，前六天分别造出了鸡、狗、猪、羊、牛、马，第七天才造出了人，所以这一天是全人类共同的生日。在这一天，古人有尊敬每一个人、不惩罚犯人的传统。)",
+                    "1-8": "谷日(传说中这天是谷子的生日。)",
+                    "1-9": "天日(俗称“天公生”，是玉皇大帝的诞辰。)",
+                    "1-10": "地日(这一天是石头的生日，也叫“地日”。凡是石制的工具在这一天都禁止使用和搬动。)",
+                    "1-15": "元宵节(又名上元节——天官赐福。天官大帝在这一天降临人间，校定人之罪福，所以人们张灯结彩，既是庆贺团圆，也是迎接福气。正月是农历的元月，古人称夜为“宵”，所以称正月十五为“元宵节”。)",
+                    "2-2": "龙抬头",
+                    "3-3": "上巳节(农历三月初三，是中国古人的情人节和春游日。也是壮族最盛大的节日——歌圩节)",
+                    "5-5": "端午节",
+                    "7-7": "七夕节",
+                    "7-15": "中元节(又名鬼节——地官赦罪。民间相信，这一天地府会放出全部鬼魂，已故的祖先可以回家团圆，因此家家户户祭祖、上坟、点河灯，为亡魂照路，普度孤魂野鬼。)",
+                    "8-15": "中秋节",
+                    "9-9": "重阳节",
+                    "10-1": "寒衣节",
+                    "10-15": "下元节(又名水官节——水官解厄。这天是水官大帝的诞辰，也是他下凡为人们解除灾难的日子)",
+                    "12-8": "腊八节",
+                    "12-23": "北方小年(送灶神、大扫除、备年货，开始正式进入过年的节奏)",
+                    "12-24": "南方小年(送灶神、大扫除、备年货，开始正式进入过年的节奏)"
+                },
+                MyFixedLunar: {
+                    "1973-1-16": "LWB农历🎂",
+                    "1973-5-8": "ZXJ农历🎂",
+                    "2001-8-18": "QQ农历🎂",
+                    "1945-09-24": "WJY农历🎂",
+                    "2020-09-29": "LK农历忌日🕯",
+                    "1946-12-14": "YXR农历🎂"
 
-    goToday() {
-        this.viewDate = new Date();
-        this.selectedDate = new Date();
-        this.render();
-    }
-
-    render() {
-        const year = this.viewDate.getFullYear();
-        const month = this.viewDate.getMonth();
-        
-        document.getElementById('topMonth').innerText = `${month + 1}月`;
-        document.getElementById('yearSelect').value = year;
-
-        this.renderHeaders();
-        this.renderGrid(year, month);
-        this.updateDetails();
-    }
-
-    renderHeaders() {
-        const header = document.getElementById('weekHeaders');
-        header.innerHTML = '';
-        const names = CONFIG.START_MONDAY 
-            ? ["一", "二", "三", "四", "五", "六", "日"] 
-            : ["日", "一", "二", "三", "四", "五", "六"];
-        
-        names.forEach(name => {
-            const div = document.createElement('div');
-            div.className = 'weekday';
-            if (name === "六" || name === "日") {
-                div.classList.add('weekend');
-            }
-            div.innerText = name;
-            header.appendChild(div);
-        });
-    }
-
-    renderGrid(year, month) {
-        const body = document.getElementById('gridBody');
-        body.innerHTML = '';
-
-        const firstDay = new Date(year, month, 1);
-        let startFill = firstDay.getDay(); 
-        if (CONFIG.START_MONDAY) {
-            startFill = startFill === 0 ? 6 : startFill - 1;
-        }
-
-        const prevMonthLast = new Date(year, month, 0);
-        for (let i = startFill - 1; i >= 0; i--) {
-            const date = new Date(year, month - 1, prevMonthLast.getDate() - i);
-            body.appendChild(this.createCell(date, true));
-        }
-
-        const thisMonthLast = new Date(year, month + 1, 0);
-        for (let i = 1; i <= thisMonthLast.getDate(); i++) {
-            const date = new Date(year, month, i);
-            body.appendChild(this.createCell(date, false));
-        }
-
-        const totalSent = body.children.length;
-        const totalNeeded = totalSent > 35 ? 42 : 35;
-        for (let i = 1; i <= (totalNeeded - totalSent); i++) {
-            const date = new Date(year, month + 1, i);
-            body.appendChild(this.createCell(date, true));
-        }
-    }
-
-    createCell(date, isOtherMonth) {
-        const div = document.createElement('div');
-        div.className = 'day-cell';
-        
-        if (isOtherMonth) {
-            if (!CONFIG.SHOW_OTHER_MONTH_DAYS) {
-                div.style.visibility = 'hidden';
-                return div;
-            }
-            div.classList.add('other-month');
-        }
-
-        const solar = Solar.fromDate(date);
-        const lunar = Lunar.fromSolar(solar);
-
-        const today = new Date();
-        if (date.toDateString() === today.toDateString()) div.classList.add('today');
-        if (this.selectedDate && date.toDateString() === this.selectedDate.toDateString()) div.classList.add('selected');
-
-        const dow = date.getDay();
-        if (dow === 0 || dow === 6) div.classList.add('weekend');
-
-        // 数字
-        const num = document.createElement('div');
-        num.className = 'day-num';
-        num.innerText = date.getDate();
-        div.appendChild(num);
-
-        // 农历/24节气
-        const lunarDiv = document.createElement('div');
-        lunarDiv.className = 'lunar-info';
-        
-        const jieQi = lunar.getJieQi(); 
-        if (jieQi) {
-            lunarDiv.innerText = jieQi;
-            lunarDiv.classList.add('jieqi');
-        } else {
-            const lunarDayStr = lunar.getDayInChinese();
-            if (lunarDayStr === '初一') {
-                lunarDiv.innerText = lunar.getMonthInChinese() + '月';
-                lunarDiv.classList.add('chuyi');
-            } else {
-                lunarDiv.innerText = lunarDayStr;
-            }
-        }
-        div.appendChild(lunarDiv);
-
-        // 节日/纪念日标识 (全量显示，分行)
-        const hols = this.getAllHolidays(date);
-        if (hols.length > 0) {
-            const holList = document.createElement('div');
-            holList.className = 'holiday-list';
-            hols.forEach(hol => {
-                const tag = document.createElement('div');
-                let tagClass = hol.css;
-                
-                // Color override logic
-                if (hol.name.includes('🎂')) {
-                    tagClass = 'tag-birthday';
-                } else if (hol.name.includes('忌日') || hol.name.includes('🕯')) {
-                    tagClass = 'tag-memorial';
-                } else if (hol.name.startsWith('中·')) {
-                    tagClass = 'tag-china';
-                } else if (hol.name.startsWith('美·')) {
-                    tagClass = 'tag-us';
-                } else if (hol.name.startsWith('巴·')) {
-                    tagClass = 'tag-brazil';
+                },
+                variable: {
+                    "2025": { "03-04": "政协开幕", "03-05": "人大开幕", "03-10": "政协闭幕", "03-11": "人大闭幕" },
+                    "2026": { "03-04": "政协开幕", "03-05": "人大开幕", "03-11": "政协闭幕", "03-12": "人大闭幕" }
                 }
-                
-                tag.className = `holiday-tag ${tagClass}`;
-                // Remove prefix for display in cell if desired, but user didn't specify. 
-                // Keeping clean name.
-                tag.innerText = hol.name.split('(')[0].replace(/^[中美巴]·/, '');
-                holList.appendChild(tag);
-            });
-            div.appendChild(holList);
-        }
+            },
+            "巴西": {
+                css: "tag-green", prefix: "巴·",
+                FixedGregorian: {
+                    "01-01": "元旦/世界和平日(Confraternização Universal/Ano Novo)",
+                    "03-08": "国际妇女节(Dia Internacional da Mulher)",
+                    "04-21": "蒂拉登特斯(Tiradentes,又称拔牙者纪念日)",
+                    "05-01": "劳动节(Dia do Trabalho)",
+                    "1822-09-07": "独立日(Independência do Brasil,巴西于1822年脱离葡萄牙独立)",
+                    "10-12": "阿帕雷西达圣母日(Nossa Senhora Aparecida,英语Our Lady of Aparecida)",
+                    "10-31": "萨西节(Dia do Saci,萨西是巴西民间传说中一个戴着红帽子、独腿、抽着烟斗、爱搞恶作剧的黑人男孩。巴西旨在通过庆祝巴西本土的民间传说人物，来构成对美国文化入侵的和平抵抗。)",
+                    "11-02": "万灵节(Dia de Finados,英语All Souls' Day,去墓地祭奠、缅怀逝去的亲人。)",
+                    "1889-11-15": "共和国宣言日(Proclamação da República,巴西于1889年废除帝制,建立共和)",
+                    "12-25": "圣诞节(Natal)"
+                }
+            },
+            "美国": {
+                css: "tag-blue", prefix: "美·",
+                FixedGregorian: {
+                    "01-01": "新年(New Year's Day)",
+                    "02-14": "情人节(Valentine's Day)",
+                    "04-01": "愚人节(April Fools' Day)",
+                    "06-19": "六月节(Juneteenth，它的名字是June和nineteenth的合成词，在每年6月19日庆祝，纪念美国奴隶制的最终结束)",
+                    "1776-07-04": "独立日(Independence Day,1776年7月4日大陆会议正式通过《独立宣言》,宣告北美13个殖民地脱离英国统治,成为独立的国家)",
+                    "10-31": "万圣节(Halloween,年轻人的派对,小孩子“不给糖就捣蛋”)",
+                    "11-11": "退伍军人节 (Veterans Day,向所有在美国武装部队服过役的健在的退伍军人表达敬意的日子。)",
+                    "12-24": "平安夜(Christmas Eve)",
+                    "12-25": "圣诞节(Christmas Day,庆祝耶稣基督诞生的基督教节日，如今已发展成涵盖宗教仪式、家庭团聚、礼物赠送和文化传统的盛大节日。)",
+                    "03-31": "查韦斯日(Cesar Chavez Day,加州节日,纪念的墨西哥裔美国劳工领袖、民权活动家塞萨尔·查韦斯的诞辰和遗产)",
+                    "04-24": "种族灭绝纪念(Genocide Remembrance Day,加州节日，该纪念日在覆盖多个群体的同时，与亚美尼亚种族灭绝纪念日共享同一个日期，并且亚美尼亚社区的遭遇是其核心纪念内容之一。)",
+                    "1850-09-09": "加州入美纪念日(Admission Day,加州节日，1850年9月9日加利福尼亚正式加入联邦，成为美国的第31个州)"
+                }
+            }
+        };
 
-        div.onclick = () => {
-            if (isOtherMonth) {
-                // 如果点到了其它月份，自动跳转并选中
-                this.selectedDate = date;
-                const viewMonth = this.viewDate.getMonth();
-                const targetMonth = date.getMonth();
-                const step = targetMonth - viewMonth;
-                // 处理夸年逻辑
-                const actualStep = step > 10 ? -1 : (step < -10 ? 1 : step);
-                this.changeMonth(actualStep);
-            } else {
-                this.selectedDate = date;
+        const ZODIAC_EMOJI = { "鼠": "🐭", "牛": "🐮", "虎": "🐯", "兔": "🐇", "龙": "🐉", "蛇": "🐍", "马": "🐴", "羊": "🐑", "猴": "🐵", "鸡": "🐓", "狗": "🐶", "猪": "🐷" };
+
+        class CalendarEngine {
+            constructor() {
+                this.viewDate = new Date();
+                this.selectedDate = new Date(); 
+                this.initYearSelect();
+                this.initMonthSelect();
+                this.bindKeys();
                 this.render();
             }
-        };
 
-        return div;
-    }
-
-    getAllHolidays(date) {
-        const list = [];
-        const y = date.getFullYear();
-        const m = date.getMonth() + 1;
-        const d = date.getDate();
-        const mmdd = this.formatDate(date, 'MM-DD');
-        const ymmdd = this.formatDate(date, 'YYYY-MM-DD');
-
-        // 中国
-        const cn = holidayDB["中国"];
-        if (cn.FixedGregorian[mmdd]) list.push({ name: cn.prefix + cn.FixedGregorian[mmdd], css: cn.css });
-        for (let key in cn.FixedGregorian) {
-            if (key.length > 5 && ymmdd === key) list.push({ name: cn.prefix + cn.FixedGregorian[key], css: cn.css });
-        }
-        
-        if (cn.MyFixedGregorian[mmdd]) list.push({ name: cn.prefix + cn.MyFixedGregorian[mmdd], css: cn.css });
-        if (cn.MyFixedGregorian[ymmdd]) list.push({ name: cn.prefix + cn.MyFixedGregorian[ymmdd], css: cn.css });
-        
-        const solar = Solar.fromDate(date);
-        const lunar = Lunar.fromSolar(solar);
-        const lm = lunar.getMonth();
-        const ld = lunar.getDay();
-        const lKey = lm + '-' + ld;
-        
-        if (cn.FixedLunar[lKey]) {
-            list.push({ name: cn.prefix + cn.FixedLunar[lKey], css: cn.css });
-        }
-        if (lm === 1 && ld <= 10) {
-            const folk = ["鸡日", "犬日", "猪日", "羊日", "牛日", "马日", "人日", "谷日", "天日", "地日"];
-            list.push({ name: "俗·" + folk[ld - 1], css: "tag-grey" });
-        }
-        if (cn.MyFixedLunar[lKey]) {
-            list.push({ name: cn.prefix + cn.MyFixedLunar[lKey], css: cn.css });
-        }
-        if (cn.variable[y] && cn.variable[y][mmdd]) {
-            list.push({ name: cn.prefix + cn.variable[y][mmdd], css: cn.css });
-        }
-
-        // 美国 & 巴西
-        ["巴西", "美国"].forEach(country => {
-            const db = holidayDB[country];
-            if (db.FixedGregorian[mmdd]) list.push({ name: db.prefix + db.FixedGregorian[mmdd], css: db.css });
-            for (let key in db.FixedGregorian) {
-                if (key.length > 5 && ymmdd === key) list.push({ name: db.prefix + db.FixedGregorian[key], css: db.css });
+            initYearSelect() {
+                const select = document.getElementById('yearSelect');
+                select.innerHTML = '';
+                for (let y = 1900; y <= 2100; y++) {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.innerText = y + '年';
+                    select.appendChild(opt);
+                }
             }
-        });
 
-        // 巴西 浮动假日 (基于复活节)
-        const easter = this.getEaster(y);
-        const diff = Math.round((date.getTime() - easter.getTime()) / 86400000);
-        if (diff === -47) list.push({ name: "巴·Carnaval(狂欢节)", css: "tag-green" });
-        if (diff === -46) list.push({ name: "巴·Quarta-feira(圣灰星期三)", css: "tag-green" });
-        if (diff === -2) list.push({ name: "巴·Paixão(耶稣受难日)", css: "tag-green" });
-        if (diff === 0) list.push({ name: "巴·Páscoa(复活节)", css: "tag-green" });
-        if (diff === 60) list.push({ name: "巴·Corpus Christi(圣体节)", css: "tag-green" });
+            initMonthSelect() {
+                const select = document.getElementById('monthSelect');
+                select.innerHTML = '';
+                for (let m = 1; m <= 12; m++) {
+                    const opt = document.createElement('option');
+                    opt.value = m - 1;
+                    opt.innerText = m + '月';
+                    select.appendChild(opt);
+                }
+            }
 
-        // 美国 浮动假日
-        if (m === 1 && this.getNthWeekday(y, 1, 1, 3) === d) list.push({ name: "美·MLK Day", css: "tag-blue" });
-        if (m === 2 && this.getNthWeekday(y, 2, 1, 3) === d) list.push({ name: "美·Washington's Day", css: "tag-blue" });
-        if (m === 5 && this.getLastWeekday(y, 5, 1) === d) list.push({ name: "美·Memorial Day", css: "tag-blue" });
-        if (m === 9 && this.getNthWeekday(y, 9, 1, 1) === d) list.push({ name: "美·Labor Day", css: "tag-blue" });
-        if (m === 10 && this.getNthWeekday(y, 10, 1, 2) === d) list.push({ name: "美·Columbus Day", css: "tag-blue" });
-        if (m === 11 && this.getNthWeekday(y, 11, 4, 4) === d) list.push({ name: "美·Thanksgiving", css: "tag-blue" });
-        if (m === 11 && this.getNthWeekday(y, 11, 4, 4) + 1 === d) list.push({ name: "美·Black Friday", css: "tag-blue" });
-        if (m === 5 && this.getNthWeekday(y, 5, 0, 2) === d) list.push({ name: "美·Mother's Day", css: "tag-blue" });
-        if (m === 6 && this.getNthWeekday(y, 6, 0, 3) === d) list.push({ name: "美·Father's Day", css: "tag-blue" });
+            bindKeys() {
+                window.addEventListener('keydown', (e) => {
+                    if (document.activeElement.tagName === 'SELECT' || document.activeElement.tagName === 'INPUT') return;
+                    switch (e.key) {
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            this.changeMonth(12);
+                            break;
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            this.changeMonth(-12);
+                            break;
+                        case 'ArrowLeft':
+                            e.preventDefault();
+                            this.changeMonth(-1);
+                            break;
+                        case 'ArrowRight':
+                            e.preventDefault();
+                            this.changeMonth(1);
+                            break;
+                    }
+                });
+            }
 
-        return list;
-    }
+            changeMonth(step) {
+                this.viewDate.setMonth(this.viewDate.getMonth() + step);
+                this.render();
+            }
 
-    getEaster(y) {
-        const f = Math.floor, G = y % 19, C = f(y / 100), H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30,
-              I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)), J = (y + f(y / 4) + I + 2 - C + f(C / 4)) % 7,
-              L = I - J, month = 3 + f((L + 40) / 44), day = L + 28 - 31 * f(month / 4);
-        return new Date(y, month - 1, day);
-    }
-    
-    getNthWeekday(y, m, dayOfWeek, n) {
-        let count = 0, date = new Date(y, m - 1, 1);
-        while (date.getMonth() === m - 1) {
-            if (date.getDay() === dayOfWeek) { if (++count === n) return date.getDate(); }
-            date.setDate(date.getDate() + 1);
-        }
-        return -1;
-    }
+            goToday() {
+                this.viewDate = new Date();
+                this.selectedDate = new Date();
+                this.render();
+            }
 
-    getLastWeekday(y, m, dayOfWeek) {
-        let date = new Date(y, m, 0);
-        while (date.getDay() !== dayOfWeek) date.setDate(date.getDate() - 1);
-        return date.getDate();
-    }
+            render() {
+                const year = this.viewDate.getFullYear();
+                const month = this.viewDate.getMonth();
 
-    getZodiac(lunar) {
-        if (CONFIG.ZODIAC_BY_LICHUN) return lunar.getYearZodiac();
-        const year = lunar.getYear();
-        const animals = "鼠牛虎兔龙蛇马羊猴鸡狗猪";
-        return animals.charAt((year - 4) % 12);
-    }
+                document.getElementById('yearSelect').value = year;
+                document.getElementById('monthSelect').value = month;
 
-    updateDetails() {
-        if (!this.selectedDate) return;
-        const d = this.selectedDate;
-        const solar = Solar.fromDate(d);
-        const lunar = Lunar.fromSolar(solar);
+                this.renderHeaders();
+                this.renderGrid(year, month);
+                this.updateDetails();
+            }
 
-        // 左侧更新
-        const weeks = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
-        document.getElementById('sideDayNum').innerText = d.getDate().toString().padStart(2, '0');
-        document.getElementById('sideWeekday').innerText = weeks[d.getDay()];
-        document.getElementById('sideFullDate').innerText = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+            renderHeaders() {
+                const header = document.getElementById('weekHeaders');
+                header.innerHTML = '';
+                const names = CONFIG.START_MONDAY
+                    ? ["一", "二", "三", "四", "五", "六", "日"]
+                    : ["日", "一", "二", "三", "四", "五", "六"];
 
-        // 农历与干支
-        const lm = lunar.getMonthInChinese();
-        const ld = lunar.getDayInChinese();
-        document.getElementById('sideLunar').innerText = `${lm}月${ld}`;
-        
-        const gY = lunar.getYearInGanZhi() + '年';
-        const gM = lunar.getMonthInGanZhi() + '月';
-        const gD = lunar.getDayInGanZhi() + '日';
-        document.getElementById('sidePillars').innerText = `${gY} ${gM} ${gD}`;
-        
-        // 生肖
-        const z = this.getZodiac(lunar);
-        document.getElementById('sideZodiac').innerText = `${z} ${ZODIAC_EMOJI[z]}`;
+                names.forEach(name => {
+                    const div = document.createElement('div');
+                    div.className = 'weekday';
+                    if (name === "六" || name === "日") {
+                        div.classList.add('weekend');
+                    }
+                    div.innerText = name;
+                    header.appendChild(div);
+                });
+            }
 
-        // 节假日汇总
-        const hols = this.getAllHolidays(d);
-        const festElem = document.getElementById('sideFestivals');
-        if (hols.length === 0) {
-            festElem.innerText = "无节日";
-            festElem.style.color = "var(--text-sec)";
-        } else {
-            festElem.innerHTML = hols.map(h => {
-                let name = h.name.split('(')[0];
-                return `<div>${name}</div>`;
-            }).join('');
-            festElem.style.color = "var(--primary-red)";
-        }
+            renderGrid(year, month) {
+                const body = document.getElementById('gridBody');
+                body.innerHTML = '';
 
-        // 黄历 宜忌
-        try {
-            const yi = lunar.getDayYi();
-            const ji = lunar.getDayJi();
-            
-            document.getElementById('sideYi').innerText = yi && yi.length > 0 ? yi.slice(0, 6).join(' ') : '诸事不宜';
-            document.getElementById('sideJi').innerText = ji && ji.length > 0 ? ji.slice(0, 6).join(' ') : '无所忌讳';
-        } catch(e) {
-            document.getElementById('sideYi').innerText = '解除 动土 祭祀';
-            document.getElementById('sideJi').innerText = '嫁娶 出行 入宅';
-        }
-    }
+                const firstDay = new Date(year, month, 1);
+                let startFill = firstDay.getDay();
+                if (CONFIG.START_MONDAY) {
+                    startFill = startFill === 0 ? 6 : startFill - 1;
+                }
 
-    formatDate(date, fmt) {
-        const o = {
-            "M+": date.getMonth() + 1,
-            "D+": date.getDate(),
-            "Y+": date.getFullYear()
-        };
-        let res = fmt;
-        for (let k in o) {
-            const reg = new RegExp("(" + k + ")");
-            if (reg.test(res)) {
-                let val = o[k].toString();
-                if (k !== "Y+" && val.length === 1) val = "0" + val;
-                res = res.replace(reg, val);
+                const prevMonthLast = new Date(year, month, 0);
+                for (let i = startFill - 1; i >= 0; i--) {
+                    const date = new Date(year, month - 1, prevMonthLast.getDate() - i);
+                    body.appendChild(this.createCell(date, true));
+                }
+
+                const thisMonthLast = new Date(year, month + 1, 0);
+                for (let i = 1; i <= thisMonthLast.getDate(); i++) {
+                    const date = new Date(year, month, i);
+                    body.appendChild(this.createCell(date, false));
+                }
+
+                const totalSent = body.children.length;
+                const totalNeeded = totalSent > 35 ? 42 : 35;
+                for (let i = 1; i <= (totalNeeded - totalSent); i++) {
+                    const date = new Date(year, month + 1, i);
+                    body.appendChild(this.createCell(date, true));
+                }
+            }
+
+            createCell(date, isOtherMonth) {
+                const div = document.createElement('div');
+                div.className = 'day-cell';
+
+                if (isOtherMonth) {
+                    if (!CONFIG.SHOW_OTHER_MONTH_DAYS) {
+                        div.style.visibility = 'hidden';
+                        return div;
+                    }
+                    div.classList.add('other-month');
+                }
+
+                const solar = Solar.fromDate(date);
+                const lunar = Lunar.fromSolar(solar);
+
+                const today = new Date();
+                if (date.toDateString() === today.toDateString()) div.classList.add('today');
+                if (this.selectedDate && date.toDateString() === this.selectedDate.toDateString()) div.classList.add('selected');
+
+                const dow = date.getDay();
+                if (dow === 0 || dow === 6) div.classList.add('weekend');
+
+                // 数字
+                const num = document.createElement('div');
+                num.className = 'day-num';
+                num.innerText = date.getDate();
+                div.appendChild(num);
+
+                // 农历/24节气
+                const lunarDiv = document.createElement('div');
+                lunarDiv.className = 'lunar-info';
+
+                const jieQi = lunar.getJieQi();
+                if (jieQi) {
+                    lunarDiv.innerText = jieQi;
+                    lunarDiv.classList.add('jieqi');
+                } else {
+                    const lunarDayStr = lunar.getDayInChinese();
+                    if (lunarDayStr === '初一') {
+                        lunarDiv.innerText = lunar.getMonthInChinese() + '月';
+                        lunarDiv.classList.add('chuyi');
+                    } else {
+                        lunarDiv.innerText = lunarDayStr;
+                    }
+                }
+                div.appendChild(lunarDiv);
+
+                // 节日/纪念日标识 (全量显示，分行)
+                const hols = this.getAllHolidays(date);
+                if (hols.length > 0) {
+                    const holList = document.createElement('div');
+                    holList.className = 'holiday-list';
+                    hols.forEach(hol => {
+                        const tag = document.createElement('div');
+                        let tagClass = hol.css;
+
+                        // Color override logic
+                        if (hol.name.includes('🎂')) {
+                            tagClass = 'tag-birthday';
+                        } else if (hol.name.includes('忌日') || hol.name.includes('🕯')) {
+                            tagClass = 'tag-memorial';
+                        } else if (hol.name.startsWith('中·')) {
+                            tagClass = 'tag-china';
+                        } else if (hol.name.startsWith('美·')) {
+                            tagClass = 'tag-us';
+                        } else if (hol.name.startsWith('巴·')) {
+                            tagClass = 'tag-brazil';
+                        }
+
+                        tag.className = `holiday-tag ${tagClass}`;
+                        // 日历格子中不显示括号及其内容
+                        let displayName = hol.name.split('(')[0].split('（')[0].replace(/^[中美巴]·/, '');
+                        tag.innerText = displayName;
+                        holList.appendChild(tag);
+                    });
+                    div.appendChild(holList);
+                }
+
+                div.onclick = () => {
+                    if (isOtherMonth) {
+                        // 如果点到了其它月份，自动跳转并选中
+                        this.selectedDate = date;
+                        const viewMonth = this.viewDate.getMonth();
+                        const targetMonth = date.getMonth();
+                        const step = targetMonth - viewMonth;
+                        // 处理夸年逻辑
+                        const actualStep = step > 10 ? -1 : (step < -10 ? 1 : step);
+                        this.changeMonth(actualStep);
+                    } else {
+                        this.selectedDate = date;
+                        this.render();
+                    }
+                };
+
+                return div;
+            }
+
+            getAllHolidays(date) {
+                const list = [];
+                const currentY = date.getFullYear();
+                const m = date.getMonth() + 1;
+                const d = date.getDate();
+                const mmdd = this.formatDate(date, 'MM-DD');
+                const ymmdd = this.formatDate(date, 'YYYY-MM-DD');
+
+                const collect = (dbObj, prefix, css) => {
+                    if (!dbObj) return;
+                    for (let key in dbObj) {
+                        let isAnniv = false;
+                        let annivVal = null;
+
+                        // 检查是否符合当前日期
+                        if (key === mmdd || key === ymmdd) {
+                            isAnniv = (key.length > 5);
+                            if (isAnniv) annivVal = currentY - parseInt(key.split('-')[0]);
+                            list.push({ name: prefix + dbObj[key], css: css, anniversary: annivVal });
+                        } else if (key.length > 5 && key.endsWith('-' + mmdd)) {
+                            // 处理 YYYY-MM-DD 但匹配当前 MM-DD 的情况
+                            annivVal = currentY - parseInt(key.split('-')[0]);
+                            list.push({ name: prefix + dbObj[key], css: css, anniversary: annivVal });
+                        }
+                    }
+                };
+
+                // 中国
+                const cn = holidayDB["中国"];
+                collect(cn.FixedGregorian, cn.prefix, cn.css);
+                collect(cn.MyFixedGregorian, cn.prefix, cn.css);
+
+                const solar = Solar.fromDate(date);
+                const lunar = Lunar.fromSolar(solar);
+                const lm = lunar.getMonth();
+                const ld = lunar.getDay();
+                const lKey = lm + '-' + ld;
+
+                if (cn.FixedLunar[lKey]) list.push({ name: cn.prefix + cn.FixedLunar[lKey], css: cn.css });
+                if (cn.MyFixedLunar[lKey]) list.push({ name: cn.prefix + cn.MyFixedLunar[lKey], css: cn.css });
+                if (cn.variable[currentY] && cn.variable[currentY][mmdd]) {
+                    list.push({ name: cn.prefix + cn.variable[currentY][mmdd], css: cn.css });
+                }
+
+                // ---- 中国特殊动态日期 (除夕, 寒食, 数九, 三伏) ----
+                // 1. 除夕 (当月最后一天且明天是正月初一)
+                const tomorrowDate = new Date(date.getTime() + 86400000);
+                const lTomorrow = Lunar.fromSolar(Solar.fromDate(tomorrowDate));
+                if (lTomorrow.getMonth() === 1 && lTomorrow.getDay() === 1) {
+                    list.push({ name: cn.prefix + "除夕", css: cn.css });
+                }
+
+                // 2. 寒食节 (清明节前一天)
+                if (lTomorrow.getJieQi() === '清明') {
+                    list.push({ name: cn.prefix + "寒食节(纪念介子推)", css: cn.css });
+                }
+
+                // 3. 数九
+                // 寻找当年前一年或当年的冬至 (1/2/3月需回溯到去年的冬至)
+                let baseYear = (m <= 3) ? currentY - 1 : currentY;
+                let dzDate = null;
+                // 用来查找冬至的循环
+                for (let d_offset = 20; d_offset <= 24; d_offset++) {
+                    let d_check = new Date(baseYear, 11, d_offset);
+                    if (Lunar.fromSolar(Solar.fromDate(d_check)).getJieQi() === '冬至') {
+                        dzDate = d_check;
+                        break;
+                    }
+                }
+                if (dzDate) {
+                    dzDate.setHours(0, 0, 0, 0);
+                    let curDateClean = new Date(date);
+                    curDateClean.setHours(0, 0, 0, 0);
+                    let diff = Math.round((curDateClean.getTime() - dzDate.getTime()) / 86400000);
+                    if (diff >= 0 && diff < 81 && diff % 9 === 0) {
+                        const jiuNames = ["", "一九", "二九", "三九", "四九", "五九", "六九", "七九", "八九", "九九"];
+                        let idx = Math.floor(diff / 9) + 1;
+                        if (idx >= 1 && idx <= 9) {
+                            list.push({ name: cn.prefix + jiuNames[idx], css: cn.css });
+                        }
+                    }
+                }
+
+                // 4. 三伏天
+                if (m >= 7 && m <= 8) {
+                    // 获取夏至和立秋
+                    let xzDate = null, lqDate = null;
+                    for (let d_off = 10; d_off <= 30; d_off++) {
+                        let d_c = new Date(currentY, 5, d_off);
+                        if (Lunar.fromSolar(Solar.fromDate(d_c)).getJieQi() === '夏至') xzDate = d_c;
+                    }
+                    for (let d_off = 1; d_off <= 15; d_off++) {
+                        let d_c = new Date(currentY, 7, d_off);
+                        if (Lunar.fromSolar(Solar.fromDate(d_c)).getJieQi() === '立秋') lqDate = d_c;
+                    }
+
+                    const getGengDay = (startDate, occurrence) => {
+                        let tmp = new Date(startDate);
+                        let count = 0;
+                        for (let k = 0; k < 60; k++) {
+                            if (Lunar.fromSolar(Solar.fromDate(tmp)).getDayGan() === '庚') {
+                                count++;
+                                if (count === occurrence) return tmp;
+                            }
+                            tmp.setDate(tmp.getDate() + 1);
+                        }
+                        return null;
+                    };
+
+                    if (xzDate && lqDate) {
+                        let chuFu = getGengDay(xzDate, 3);
+                        let zhongFu = getGengDay(xzDate, 4);
+                        let moFu = getGengDay(lqDate, 1);
+
+                        let curT = new Date(date); curT.setHours(0, 0, 0, 0);
+                        if (chuFu && curT.getTime() === chuFu.getTime()) list.push({ name: cn.prefix + "初伏", css: cn.css });
+                        if (zhongFu && curT.getTime() === zhongFu.getTime()) list.push({ name: cn.prefix + "中伏", css: cn.css });
+                        if (moFu && curT.getTime() === moFu.getTime()) list.push({ name: cn.prefix + "末伏", css: cn.css });
+                        if (moFu && curT.getTime() === (moFu.getTime() + 10 * 86400000)) list.push({ name: cn.prefix + "出伏", css: cn.css });
+                    }
+                }
+
+                // 美国 & 巴西
+                ["巴西", "美国"].forEach(country => {
+                    const db = holidayDB[country];
+                    collect(db.FixedGregorian, db.prefix, db.css);
+                });
+
+                // 巴西 & 美国 动态/浮动节假日
+                const easter = this.getEaster(currentY);
+                const getRelEaster = (days) => {
+                    let d2 = new Date(easter);
+                    d2.setDate(easter.getDate() + days);
+                    return this.formatDate(d2, 'MM-DD');
+                };
+
+                // 巴西浮动
+                const dynamicBR = {};
+                dynamicBR[getRelEaster(-50)] = "狂欢节开始(Carnival Saturday，狂欢节的庆祝从今天开始)";
+                dynamicBR[getRelEaster(-47)] = "狂欢节(Carnaval,英语Carnival，也称狂欢节周二，实际上也是狂欢节最后一天。狂欢节是复活节前第49天。主要庆祝活动从之前的周五或周六开始，一直持续到圣灰星期三的前一天。)";
+                dynamicBR[getRelEaster(-46)] = "圣灰星期三(Quarta-Feira de Cinzas,英语Ash Wednesday,基督教大斋期四旬期的起始日,教会于此日举行涂灰礼,用去年棕枝烧成的灰在教友额上划十字,象征悔改。)";
+                dynamicBR[getRelEaster(-7)] = "棕树主日(Palm Sunday,复活节前的一个星期日，标志着圣周的开始。它纪念耶稣骑驴荣入耶路撒冷时，民众手持棕榈枝欢呼迎接的场景。)";
+                dynamicBR[getRelEaster(-3)] = "濯足节/圣周四(Maundy Thursday,最后的晚餐的日子，耶稣在受难前夕最后晚餐上为十二门徒洗脚。)";
+                dynamicBR[getRelEaster(-2)] = "耶稣受难日/圣周五(Sexta-feira Santa / Paixão de Cristo,英语Good Friday，Good一词在古代有“神圣”、“圣洁”的意思，Good Friday即代表神圣的周五的意思。受难日是记念耶稣之死。)";
+                dynamicBR[getRelEaster(-1)] = "圣周六(Holy Saturday，纪念耶稣埋葬的日子)";
+                dynamicBR[this.formatDate(easter, 'MM-DD')] = "复活节(Páscoa，基督教纪念耶稣基督被钉死在十字架后第三天复活的节日,象征重生与希望)";
+                dynamicBR[getRelEaster(60)] = "基督圣体节(Corpus Christi,庆祝和纪念圣体圣事——即相信在弥撒中祝圣过的饼和酒真正变成了基督的身体和血。)";
+
+                if (m === 5 && this.getNthWeekday(currentY, 5, 0, 2) === d) dynamicBR[mmdd] = "母亲节(Dia das Mães)";
+                if (m === 8 && this.getNthWeekday(currentY, 8, 0, 2) === d) dynamicBR[mmdd] = "父亲节(Dia dos Pais)";
+
+                const brThanksDay = this.getNthWeekday(currentY, 11, 4, 4);
+                if (m === 11 && brThanksDay === d) {
+                    dynamicBR[mmdd] = "感恩节(Dia de Ação de Graças,受美国感恩节文化影响于1949年设立,侧重宗教仪式和家庭团,表达对过去一年收获与祝福的感恩之情)";
+                }
+
+                if (dynamicBR[mmdd]) list.push({ name: "巴·" + dynamicBR[mmdd], css: "tag-green" });
+
+                // 美国浮动
+                const dynamicUS = {};
+                dynamicUS[this.formatDate(easter, 'MM-DD')] = "复活节(Easter,耶稣复活的日子)";
+
+                if (m === 1 && this.getNthWeekday(currentY, 1, 1, 3) === d) dynamicUS[mmdd] = "马丁·路德·金纪念日(MLK Jr. Day,纪念为黑人争取平等权利、以非暴力手段推动民权进步的领袖——马丁·路德·金牧师)";
+                if (m === 2 && this.getNthWeekday(currentY, 2, 1, 3) === d) dynamicUS[mmdd] = "总统日(Presidents' Day,也称华盛顿诞辰纪念日,纪念美国第一任总统乔治·华盛顿，他的生日是2月22日)";
+                if (m === 5 && this.getNthWeekday(currentY, 5, 0, 2) === d) dynamicUS[mmdd] = "母亲节(Mother's Day)";
+                if (m === 5 && this.getLastWeekday(currentY, 5, 1) === d) dynamicUS[mmdd] = "阵亡将士纪念日(Memorial Day,悼念在服役期间为国家捐躯的美国男女官兵。)";
+                if (m === 6 && this.getNthWeekday(currentY, 6, 0, 3) === d) dynamicUS[mmdd] = "父亲节(Father's Day)";
+                if (m === 9 && this.getNthWeekday(currentY, 9, 1, 1) === d) dynamicUS[mmdd] = "劳工节(Labor Day,向所有为社会和国家做出贡献的劳动者表达敬意和感谢)";
+                if (m === 10 && this.getNthWeekday(currentY, 10, 1, 2) === d) dynamicUS[mmdd] = "原住民日(Indigenous Peoples' Day,之前称哥伦布日Columbus Day。现为纪念和致敬美国原住民的历史、文化与贡献的节日，之前是将哥伦布视为发现新大陆的探险英雄而称为哥伦布日)";
+
+                const usThanksDayNum = this.getNthWeekday(currentY, 11, 4, 4);
+                if (m === 11) {
+                    if (d === usThanksDayNum) {
+                        dynamicUS[mmdd] = "感恩节(Thanksgiving Day,感恩节的由来始于1621年清教徒和原住民共享的一顿秋收大餐；现在则是家人团聚、分享感恩、享受火鸡大餐和观看游行的温馨时刻)";
+                    } else if (d === usThanksDayNum + 1) {
+                        dynamicUS[mmdd] = "黑色星期五(Black Friday,全年购物季正式开始的一天，以大幅折扣和海量抢购闻名。)";
+                    } else if (d === usThanksDayNum + 4) {
+                        dynamicUS[mmdd] = "网络星期一(Cyber Monday,黑五后的第一个星期一，主打线上商品折扣，尤其是数码产品。)";
+                    }
+                }
+
+                if (m === 9 && this.getLastWeekday(currentY, 9, 5) === d) {
+                    dynamicUS[mmdd] = "美国原住民节(Native American Day,加州节日，旨在替代“哥伦布日”，纪念在欧洲殖民者到来前就生活在美洲的全体原住民，反思殖民历史)";
+                }
+
+                if (dynamicUS[mmdd]) list.push({ name: "美·" + dynamicUS[mmdd], css: "tag-blue" });
+
+                return list;
+            }
+
+            getEaster(y) {
+                const f = Math.floor, G = y % 19, C = f(y / 100), H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30,
+                    I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)), J = (y + f(y / 4) + I + 2 - C + f(C / 4)) % 7,
+                    L = I - J, month = 3 + f((L + 40) / 44), day = L + 28 - 31 * f(month / 4);
+                return new Date(y, month - 1, day);
+            }
+
+            getNthWeekday(y, m, dayOfWeek, n) {
+                let count = 0, date = new Date(y, m - 1, 1);
+                while (date.getMonth() === m - 1) {
+                    if (date.getDay() === dayOfWeek) { if (++count === n) return date.getDate(); }
+                    date.setDate(date.getDate() + 1);
+                }
+                return -1;
+            }
+
+            getLastWeekday(y, m, dayOfWeek) {
+                let date = new Date(y, m, 0);
+                while (date.getDay() !== dayOfWeek) date.setDate(date.getDate() - 1);
+                return date.getDate();
+            }
+
+            getZodiac(lunar) {
+                if (CONFIG.ZODIAC_BY_LICHUN) return lunar.getYearZodiac();
+                const year = lunar.getYear();
+                const animals = "鼠牛虎兔龙蛇马羊猴鸡狗猪";
+                return animals.charAt((year - 4) % 12);
+            }
+
+            updateDetails() {
+                if (!this.selectedDate) return;
+                const d = this.selectedDate;
+                const solar = Solar.fromDate(d);
+                const lunar = Lunar.fromSolar(solar);
+
+                // 左侧更新
+                const weeks = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+                document.getElementById('sideDayNum').innerText = d.getDate().toString().padStart(2, '0');
+                document.getElementById('sideWeekday').innerText = weeks[d.getDay()];
+                document.getElementById('sideFullDate').innerText = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+
+                // 更新表头扩展信息
+                const startOfYear = new Date(d.getFullYear(), 0, 1);
+                // 使用 Math.round 避免夏令时导致相差一小时而少算一天的问题
+                const dayOfYear = Math.round((d - startOfYear) / 86400000) + 1;
+                // 计算当前是第几周
+                const dayOfWeek = (startOfYear.getDay() === 0) ? 7 : startOfYear.getDay(); // 1=Mon, 7=Sun
+                const weekNum = Math.ceil((dayOfYear + (dayOfWeek - 1)) / 7);
+                document.getElementById('dateStatus').innerText = `第${weekNum}周 | 第${dayOfYear}天`;
+
+                // 农历与干支
+                const lm = lunar.getMonthInChinese();
+                const ld = lunar.getDayInChinese();
+                document.getElementById('sideLunar').innerText = `${lm}月${ld}`;
+
+                const gY = lunar.getYearInGanZhi() + '年';
+                const gM = lunar.getMonthInGanZhi() + '月';
+                const gD = lunar.getDayInGanZhi() + '日';
+                document.getElementById('sidePillars').innerText = `${gY} ${gM} ${gD}`;
+
+                // 生肖
+                const z = this.getZodiac(lunar);
+                document.getElementById('sideZodiac').innerText = `${z} ${ZODIAC_EMOJI[z]}`;
+
+                // 节假日汇总
+                const hols = this.getAllHolidays(d);
+                const festElem = document.getElementById('sideFestivals');
+                if (hols.length === 0) {
+                    festElem.innerText = "无节日";
+                    festElem.style.color = "var(--text-sec)";
+                } else {
+                    festElem.innerHTML = hols.map((h, idx) => {
+                        // 同步日历格子的色彩逻辑
+                        let tagClass = h.css;
+                        if (h.name.includes('🎂')) tagClass = 'tag-birthday';
+                        else if (h.name.includes('忌日') || h.name.includes('🕯')) tagClass = 'tag-memorial';
+                        else if (h.name.startsWith('中·')) tagClass = 'tag-china';
+                        else if (h.name.startsWith('美·')) tagClass = 'tag-us';
+                        else if (h.name.startsWith('巴·')) tagClass = 'tag-brazil';
+
+                        // 拆分名称与说明
+                        let mainName = h.name.split('(')[0].split('（')[0];
+                        let dispName = mainName.replace(/^[中美巴]·/, '');
+
+                        let descMatch = h.name.match(/[（(](.+)[）)]/);
+                        let descText = descMatch ? `——${descMatch[1]}` : '';
+
+                        let annivText = (h.anniversary !== null && h.anniversary > 0)
+                            ? `——${h.anniversary}周年`
+                            : '';
+
+                        return `
+                            <div class="side-fest-item">
+                                <div class="side-fest-content">
+                                    <span class="holiday-tag ${tagClass}">${dispName}</span>
+                                    <span class="side-fest-desc">${descText}</span>
+                                    <span class="side-fest-anniv">${annivText}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    festElem.style.color = "inherit";
+                }
+
+                // 黄历 宜忌
+                try {
+                    const yi = lunar.getDayYi();
+                    const ji = lunar.getDayJi();
+
+                    document.getElementById('sideYi').innerText = yi && yi.length > 0 ? yi.slice(0, 6).join(' ') : '诸事不宜';
+                    document.getElementById('sideJi').innerText = ji && ji.length > 0 ? ji.slice(0, 6).join(' ') : '无所忌讳';
+                } catch (e) {
+                    document.getElementById('sideYi').innerText = '解除 动土 祭祀';
+                    document.getElementById('sideJi').innerText = '嫁娶 出行 入宅';
+                }
+            }
+
+            formatDate(date, fmt) {
+                const o = {
+                    "M+": date.getMonth() + 1,
+                    "D+": date.getDate(),
+                    "Y+": date.getFullYear()
+                };
+                let res = fmt;
+                for (let k in o) {
+                    const reg = new RegExp("(" + k + ")");
+                    if (reg.test(res)) {
+                        let val = o[k].toString();
+                        if (k !== "Y+" && val.length === 1) val = "0" + val;
+                        res = res.replace(reg, val);
+                    }
+                }
+                return res;
             }
         }
-        return res;
-    }
-}
 
-let engine = null;
-window.onload = () => {
-    engine = new CalendarEngine();
-};
-</script>
+        let engine = null;
+        window.onload = () => {
+            engine = new CalendarEngine();
+        };
+    </script>
 
 </body>
+
 </html>
