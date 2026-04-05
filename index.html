@@ -32,10 +32,40 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: flex-start;
             align-items: center;
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 20px;
+        }
+
+        /* 顶部切换开关 */
+        .view-switcher {
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 4px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 4px;
+            z-index: 100;
+        }
+
+        .view-switcher button {
+            border: none;
+            background: transparent;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sec);
+            transition: var(--transition);
+        }
+
+        .view-switcher button.active {
+            background: var(--text-main);
+            color: #fff;
         }
 
         .app-container {
@@ -170,7 +200,7 @@
         }
 
         .day-cell {
-            aspect-ratio: 1;
+            min-height: 110px;
             padding: 8px;
             display: flex;
             flex-direction: column;
@@ -462,6 +492,71 @@
             letter-spacing: 1px;
         }
 
+        /* 强制手机端布局逻辑 */
+        .view-mobile .app-container {
+            flex-direction: column;
+            max-width: 500px;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .view-mobile .calendar-main {
+            border-right: none;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view-mobile .calendar-header {
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        /* 需求：从上往下依次是：年月选择、第几周和第几天显示、年月和今日切换按钮 */
+        .view-mobile .month-year {
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            order: 1;
+        }
+
+        .view-mobile .date-status {
+            order: 2;
+            margin-left: 0;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .view-mobile .nav-controls {
+            order: 3;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .view-mobile .weekdays { order: 4; }
+        .view-mobile .calendar-grid { order: 5; }
+
+        .view-mobile .sidebar {
+            width: 100%;
+            padding: 20px 15px;
+            border-top: 1px solid var(--border-color);
+            order: 6;
+        }
+
+        .view-mobile .day-cell {
+            min-height: 70px;
+            padding: 4px;
+        }
+
+        .view-mobile .day-num { font-size: 1rem; }
+        .view-mobile .lunar-info { font-size: 0.65rem; }
+        .view-mobile .holiday-list { display: none; }
+
         @media (max-width: 950px) {
             .app-container {
                 flex-direction: column;
@@ -486,6 +581,7 @@
             }
 
             .day-cell {
+                min-height: 70px;
                 padding: 6px;
                 border-radius: 8px;
             }
@@ -509,12 +605,19 @@
 
 <body>
 
-    <div class="app-container">
+    <div class="view-switcher">
+        <button id="btnPC" onclick="engine.setMode('pc')">电脑端</button>
+        <button id="btnMobile" onclick="engine.setMode('mobile')">手机端</button>
+    </div>
+
+    <div class="app-container" id="appRoot">
         <div class="calendar-main">
             <header class="calendar-header">
                 <div class="month-year">
-                    <select id="monthSelect" class="month-select" onchange="engine.changeMonth(parseInt(this.value) - engine.viewDate.getMonth())"></select>
-                    <select id="yearSelect" class="year-select" onchange="engine.viewDate.setFullYear(parseInt(this.value)); engine.render();"></select>
+                    <div class="year-lbl-box">
+                        <select id="yearSelect" class="year-select" onchange="engine.viewDate.setFullYear(parseInt(this.value)); engine.render();"></select>
+                        <select id="monthSelect" class="month-select" onchange="engine.changeMonth(parseInt(this.value) - engine.viewDate.getMonth())"></select>
+                    </div>
                     <div id="dateStatus" class="date-status"></div>
                 </div>
                 <div class="nav-controls">
@@ -525,6 +628,7 @@
                     <button class="btn-icon" onclick="engine.changeMonth(12)">＞＞</button>
                 </div>
             </header>
+
 
             <div class="weekdays" id="weekHeaders">
                 <!-- 动态生成星期表头 -->
@@ -702,10 +806,34 @@
             constructor() {
                 this.viewDate = new Date();
                 this.selectedDate = new Date(); 
+                this.currentMode = localStorage.getItem('calendarMode') || 'pc';
                 this.initYearSelect();
                 this.initMonthSelect();
                 this.bindKeys();
+                this.applyMode();
                 this.render();
+            }
+
+            setMode(mode) {
+                this.currentMode = mode;
+                localStorage.setItem('calendarMode', mode);
+                this.applyMode();
+            }
+
+            applyMode() {
+                const body = document.body;
+                const btnPC = document.getElementById('btnPC');
+                const btnMobile = document.getElementById('btnMobile');
+                
+                if (this.currentMode === 'mobile') {
+                    body.classList.add('view-mobile');
+                    btnMobile.classList.add('active');
+                    btnPC.classList.remove('active');
+                } else {
+                    body.classList.remove('view-mobile');
+                    btnPC.classList.add('active');
+                    btnMobile.classList.remove('active');
+                }
             }
 
             initYearSelect() {
@@ -1187,7 +1315,7 @@
                         // 同步日历格子的色彩逻辑
                         let tagClass = h.css;
                         if (h.name.includes('🎂')) tagClass = 'tag-birthday';
-                        else if (h.name.includes('忌日') || h.name.includes('🕯')) tagClass = 'tag-memorial';
+                        else if (h.name.includes('忌日') || h.name.includes('🕯') ) tagClass = 'tag-memorial';
                         else if (h.name.startsWith('中·')) tagClass = 'tag-china';
                         else if (h.name.startsWith('美·')) tagClass = 'tag-us';
                         else if (h.name.startsWith('巴·')) tagClass = 'tag-brazil';
