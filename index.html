@@ -57,7 +57,7 @@
             background: #fff;
             padding: 4px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
             display: flex;
             gap: 4px;
             z-index: 100;
@@ -78,6 +78,23 @@
         .view-switcher button.active {
             background: var(--text-main);
             color: #fff;
+        }
+
+        /* 复制提示气泡 */
+        #copyToast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
 
         .app-container {
@@ -123,7 +140,8 @@
             align-items: center;
         }
 
-        .year-select, .month-select {
+        .year-select,
+        .month-select {
             border: none;
             background: transparent;
             font-size: 1.1rem;
@@ -137,7 +155,8 @@
             transition: var(--transition);
         }
 
-        .year-select:hover, .month-select:hover {
+        .year-select:hover,
+        .month-select:hover {
             background: #f0f0f0;
             color: var(--text-main);
         }
@@ -553,8 +572,16 @@
             justify-content: center;
         }
 
-        .view-mobile .weekdays { order: 4; margin-bottom: 10px; }
-        .view-mobile .calendar-grid { order: 5; border-left: none; border-right: none; }
+        .view-mobile .weekdays {
+            order: 4;
+            margin-bottom: 10px;
+        }
+
+        .view-mobile .calendar-grid {
+            order: 5;
+            border-left: none;
+            border-right: none;
+        }
 
         .view-mobile .sidebar {
             width: 100%;
@@ -569,9 +596,17 @@
             padding: 4px 2px;
         }
 
-        .view-mobile .day-num { font-size: 1rem; }
-        .view-mobile .lunar-info { font-size: 0.65rem; }
-        .view-mobile .holiday-list { display: none; }
+        .view-mobile .day-num {
+            font-size: 1rem;
+        }
+
+        .view-mobile .lunar-info {
+            font-size: 0.65rem;
+        }
+
+        .view-mobile .holiday-list {
+            display: none;
+        }
 
         @media (max-width: 950px) {
             .app-container {
@@ -621,6 +656,8 @@
 
 <body>
 
+    <div id="copyToast">内容已复制到剪贴板</div>
+
     <div class="view-switcher">
         <button id="btnPC" onclick="engine.setMode('pc')">电脑端</button>
         <button id="btnMobile" onclick="engine.setMode('mobile')">手机端</button>
@@ -631,8 +668,10 @@
             <header class="calendar-header">
                 <div class="month-year">
                     <div class="year-lbl-box">
-                        <select id="yearSelect" class="year-select" onchange="engine.viewDate.setFullYear(parseInt(this.value)); engine.render();"></select>
-                        <select id="monthSelect" class="month-select" onchange="engine.changeMonth(parseInt(this.value) - engine.viewDate.getMonth())"></select>
+                        <select id="yearSelect" class="year-select"
+                            onchange="engine.viewDate.setFullYear(parseInt(this.value)); engine.render();"></select>
+                        <select id="monthSelect" class="month-select"
+                            onchange="engine.changeMonth(parseInt(this.value) - engine.viewDate.getMonth())"></select>
                     </div>
                     <div id="dateStatus" class="date-status"></div>
                 </div>
@@ -723,7 +762,7 @@
                     "1927-08-01": "建军节",
                     "08-08": "台湾父亲节",
                     "1945-09-03": "抗战胜利日(抗日战争胜利纪念日)",
-                    "1976-09-09": "毛泽东忌日",
+                    "1976-09-09": "毛泽东忌日🕯",
                     "09-10": "教师节",
                     "09-30": "烈士纪念日",
                     "1949-10-01": "国庆节",
@@ -732,16 +771,18 @@
                 },
                 MyFixedGregorian: {
                     "1947-01-05": "YXR公历🎂",
+                    "1943-01-28": "LK公历🎂",
+                    "1946-02-02": "ZGZ公历🎂",
                     "1973-02-18": "LWB公历🎂",
-                    "1973-06-08": "ZXJ🎂",
+                    "1973-06-08": "ZXJ公历🎂",
                     "2023-07-10": "ZGZ公历忌日🕯",
-                    "2001-10-04": "QQ🎂",
-                    "2006-10-08": "ZZ🎂",
+                    "2001-10-04": "QQ公历🎂",
+                    "2006-10-08": "ZZ公历🎂",
                     "1945-10-29": "WJY公历🎂",
                     "2025-11-01": "XSJ忌日🕯",
                     "1998-11-06": "结婚纪念日🎂",
                     "2020-11-14": "LK公历忌日🕯",
-                    "1978-12-12": "ZMM🎂"
+                    "1978-12-12": "ZMM公历🎂"
                 },
                 FixedLunar: {
                     "1-1": "春节/鸡日(这一天不能杀鸡，也不能打骂孩子，以求吉利。古人会在门上贴鸡画，用其象征吉祥和驱邪。)",
@@ -769,13 +810,16 @@
                     "12-24": "南方小年(送灶神、大扫除、备年货，开始正式进入过年的节奏)"
                 },
                 MyFixedLunar: {
+                    "1946-1-1": "ZGZ农历🎂",
                     "1973-1-16": "LWB农历🎂",
                     "1973-5-8": "ZXJ农历🎂",
+                    "2006-8-17": "ZZ农历🎂",
                     "2001-8-18": "QQ农历🎂",
                     "1945-09-24": "WJY农历🎂",
                     "2020-09-29": "LK农历忌日🕯",
-                    "1946-12-14": "YXR农历🎂"
-
+                    "1978-11-13": "ZMM农历🎂",
+                    "1946-12-14": "YXR农历🎂",
+                    "1942-12-23": "LK农历🎂"
                 },
                 variable: {
                     "2025": { "03-04": "政协开幕", "03-05": "人大开幕", "03-10": "政协闭幕", "03-11": "人大闭幕" },
@@ -821,7 +865,7 @@
         class CalendarEngine {
             constructor() {
                 this.viewDate = new Date();
-                this.selectedDate = new Date(); 
+                this.selectedDate = new Date();
                 this.currentMode = localStorage.getItem('calendarMode') || 'pc';
                 this.initYearSelect();
                 this.initMonthSelect();
@@ -840,7 +884,7 @@
                 const body = document.body;
                 const btnPC = document.getElementById('btnPC');
                 const btnMobile = document.getElementById('btnMobile');
-                
+
                 if (this.currentMode === 'mobile') {
                     body.classList.add('view-mobile');
                     btnMobile.classList.add('active');
@@ -1028,7 +1072,7 @@
                         // Color override logic
                         if (hol.name.includes('🎂')) {
                             tagClass = 'tag-birthday';
-                        } else if (hol.name.includes('忌日') || hol.name.includes('🕯')) {
+                        } else if (hol.name.includes('忌日') || hol.name.includes('🕯') || hol.name.includes('黑色星期五')) {
                             tagClass = 'tag-memorial';
                         } else if (hol.name.startsWith('中·')) {
                             tagClass = 'tag-china';
@@ -1083,11 +1127,27 @@
                         // 检查是否符合当前日期
                         if (key === mmdd || key === ymmdd) {
                             isAnniv = (key.length > 5);
-                            if (isAnniv) annivVal = currentY - parseInt(key.split('-')[0]);
+                            if (isAnniv) {
+                                const birthYear = parseInt(key.split('-')[0]);
+                                if (birthYear > currentY) return; // 未到起始年份不显示
+                                annivVal = currentY - birthYear;
+                                if (dbObj[key].includes('🎂')) {
+                                    const overlaps = this.getBirthOverlapYears(birthYear, m, d, true);
+                                    list.push({ name: prefix + dbObj[key], css: css, anniversary: annivVal, overlaps: overlaps });
+                                    return;
+                                }
+                            }
                             list.push({ name: prefix + dbObj[key], css: css, anniversary: annivVal });
                         } else if (key.length > 5 && key.endsWith('-' + mmdd)) {
                             // 处理 YYYY-MM-DD 但匹配当前 MM-DD 的情况
-                            annivVal = currentY - parseInt(key.split('-')[0]);
+                            const birthYear = parseInt(key.split('-')[0]);
+                            if (birthYear > currentY) return; // 未到起始年份不显示
+                            annivVal = currentY - birthYear;
+                            if (dbObj[key].includes('🎂')) {
+                                const overlaps = this.getBirthOverlapYears(birthYear, m, d, true);
+                                list.push({ name: prefix + dbObj[key], css: css, anniversary: annivVal, overlaps: overlaps });
+                                return;
+                            }
                             list.push({ name: prefix + dbObj[key], css: css, anniversary: annivVal });
                         }
                     }
@@ -1102,10 +1162,47 @@
                 const lunar = Lunar.fromSolar(solar);
                 const lm = lunar.getMonth();
                 const ld = lunar.getDay();
-                const lKey = lm + '-' + ld;
+                const lmmdd = `${lm}-${ld}`;
+                const lmmddPad = `${lm.toString().padStart(2, '0')}-${ld.toString().padStart(2, '0')}`;
 
-                if (cn.FixedLunar[lKey]) list.push({ name: cn.prefix + cn.FixedLunar[lKey], css: cn.css });
-                if (cn.MyFixedLunar[lKey]) list.push({ name: cn.prefix + cn.MyFixedLunar[lKey], css: cn.css });
+                if (cn.FixedLunar[lmmdd] || cn.FixedLunar[lmmddPad]) {
+                    const name = cn.FixedLunar[lmmdd] || cn.FixedLunar[lmmddPad];
+                    list.push({ name: cn.prefix + name, css: cn.css });
+                }
+
+                // 遍历 MyFixedLunar 寻找匹配
+                for (let key in cn.MyFixedLunar) {
+                    const name = cn.MyFixedLunar[key];
+                    let match = false;
+                    let birthYear = null;
+
+                    if (key.length > 5) { // YYYY-MM-DD
+                        const parts = key.split('-');
+                        if (parseInt(parts[1]) === lm && parseInt(parts[2]) === ld) {
+                            match = true;
+                            birthYear = parseInt(parts[0]);
+                        }
+                    } else { // M-D or MM-DD
+                        const parts = key.split('-');
+                        if (parseInt(parts[0]) === lm && parseInt(parts[1]) === ld) {
+                            match = true;
+                        }
+                    }
+
+                    if (match) {
+                        let startShowYear = birthYear;
+                        if (birthYear) {
+                            // 优化逻辑：农历生日对应的公历年作为起始显示年
+                            const birthdayLunar = Lunar.fromYmd(birthYear, lm, ld);
+                            startShowYear = birthdayLunar.getSolar().getYear();
+                        }
+
+                        if (startShowYear && startShowYear > currentY) continue; // 未到起始年份不显示
+                        let anniv = birthYear ? (currentY - birthYear) : null;
+                        let overlaps = (name.includes('🎂') && birthYear) ? this.getBirthOverlapYears(birthYear, lm, ld, false) : null;
+                        list.push({ name: cn.prefix + name, css: cn.css, anniversary: anniv, overlaps: overlaps });
+                    }
+                }
                 if (cn.variable[currentY] && cn.variable[currentY][mmdd]) {
                     list.push({ name: cn.prefix + cn.variable[currentY][mmdd], css: cn.css });
                 }
@@ -1285,6 +1382,36 @@
                 return animals.charAt((year - 4) % 12);
             }
 
+            getBirthOverlapYears(birthYear, mOrLm, dOrLd, isSolar) {
+                const overlaps = [];
+                let targetLunarMonth, targetLunarDay, targetSolarMonth, targetSolarDay;
+
+                if (isSolar) {
+                    const s = Solar.fromYmd(birthYear, mOrLm, dOrLd);
+                    const l = Lunar.fromSolar(s);
+                    targetLunarMonth = l.getMonth();
+                    targetLunarDay = l.getDay();
+                    targetSolarMonth = mOrLm;
+                    targetSolarDay = dOrLd;
+                } else {
+                    const l = Lunar.fromYmd(birthYear, mOrLm, dOrLd);
+                    const s = l.getSolar();
+                    targetSolarMonth = s.getMonth();
+                    targetSolarDay = s.getDay();
+                    targetLunarMonth = mOrLm;
+                    targetLunarDay = dOrLd;
+                }
+
+                for (let y = birthYear; y <= birthYear + 120; y++) {
+                    const s = Solar.fromYmd(y, targetSolarMonth, targetSolarDay);
+                    const l = Lunar.fromSolar(s);
+                    if (l.getMonth() === targetLunarMonth && l.getDay() === targetLunarDay) {
+                        overlaps.push(y);
+                    }
+                }
+                return overlaps;
+            }
+
             updateDetails() {
                 if (!this.selectedDate) return;
                 const d = this.selectedDate;
@@ -1331,7 +1458,7 @@
                         // 同步日历格子的色彩逻辑
                         let tagClass = h.css;
                         if (h.name.includes('🎂')) tagClass = 'tag-birthday';
-                        else if (h.name.includes('忌日') || h.name.includes('🕯') ) tagClass = 'tag-memorial';
+                        else if (h.name.includes('忌日') || h.name.includes('🕯')) tagClass = 'tag-memorial';
                         else if (h.name.startsWith('中·')) tagClass = 'tag-china';
                         else if (h.name.startsWith('美·')) tagClass = 'tag-us';
                         else if (h.name.startsWith('巴·')) tagClass = 'tag-brazil';
@@ -1346,6 +1473,10 @@
                         let annivText = (h.anniversary !== null && h.anniversary > 0)
                             ? `——${h.anniversary}周年`
                             : '';
+
+                        if (h.overlaps && h.overlaps.length > 0) {
+                            annivText += `, 公历农历重合年份: ${h.overlaps.join(', ')}`;
+                        }
 
                         return `
                             <div class="side-fest-item">
@@ -1371,6 +1502,64 @@
                     document.getElementById('sideYi').innerText = '解除 动土 祭祀';
                     document.getElementById('sideJi').innerText = '嫁娶 出行 入宅';
                 }
+
+                // 复制到剪贴板
+                this.copyDetailsToClipboard();
+            }
+
+            copyDetailsToClipboard() {
+                const day = document.getElementById('sideDayNum').innerText;
+                const week = document.getElementById('sideWeekday').innerText;
+                const fullDate = document.getElementById('sideFullDate').innerText;
+                const lunar = document.getElementById('sideLunar').innerText;
+                const pillars = document.getElementById('sidePillars').innerText;
+                const zodiac = document.getElementById('sideZodiac').innerText;
+                const festivals = document.getElementById('sideFestivals').innerText.replace(/\n\s+/g, '\n').trim();
+                const yi = document.getElementById('sideYi').innerText;
+                const ji = document.getElementById('sideJi').innerText;
+
+                const text = `【日期详情】
+阳历：${fullDate} ${week}
+农历：${lunar}
+干支：${pillars}
+生肖：${zodiac}
+周数：${document.getElementById('dateStatus').innerText}
+节日：${festivals}
+宜：${yi}
+忌：${ji}`;
+
+                this.doCopy(text);
+            }
+
+            doCopy(text) {
+                try {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    // 防止在页面上产生滚动
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-9999px";
+                    textArea.style.top = "0";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        this.showToast();
+                    }
+                } catch (err) {
+                    console.error('无法复制: ', err);
+                }
+            }
+
+            showToast() {
+                const toast = document.getElementById('copyToast');
+                toast.style.opacity = '1';
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                }, 1500);
             }
 
             formatDate(date, fmt) {
