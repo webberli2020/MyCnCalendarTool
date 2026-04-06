@@ -44,7 +44,7 @@
         }
 
         body.view-mobile {
-            padding: 0;
+            padding: 0 0 0 36px; /* 左侧留出空间给切换按钝 */
             background-color: #fff;
         }
 
@@ -52,28 +52,34 @@
             height: -webkit-fill-available;
         }
 
-        /* 顶部切换开关 */
+        /* 左侧固定切换开关 */
         .view-switcher {
-            margin-bottom: 20px;
+            position: fixed;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
             background: #fff;
             padding: 4px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
             display: flex;
+            flex-direction: column;
             gap: 4px;
-            z-index: 100;
+            z-index: 200;
         }
 
         .view-switcher button {
             border: none;
             background: transparent;
-            padding: 6px 16px;
+            padding: 8px 6px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-sec);
             transition: var(--transition);
+            writing-mode: vertical-rl;
+            letter-spacing: 2px;
         }
 
         .view-switcher button.active {
@@ -104,15 +110,28 @@
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: var(--shadow);
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            grid-template-areas: 
+                "main sidebar"
+                "almanac sidebar";
             overflow: hidden;
             border: 1px solid rgba(0, 0, 0, 0.02);
         }
 
-        /*================ 左侧日历主体 ================*/
         .calendar-main {
-            flex: 1;
+            grid-area: main;
             padding: 40px 50px;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .sidebar {
+            grid-area: sidebar;
+        }
+
+        .almanac {
+            grid-area: almanac;
+            padding: 0 50px 40px 50px; /* 在桌面端，上下边距要协调 */
             border-right: 1px solid var(--border-color);
         }
 
@@ -439,21 +458,15 @@
             border-radius: 3px;
         }
 
-        .status-badge.rest {
-            color: var(--primary-red);
-            background: rgba(211, 47, 47, 0.05);
-        }
+        /* 休=红底白字，班=绿底白字（日历格子内显示国家简称） */
+        .status-badge.rest { background: #d32f2f; color: #ffffff; }
+        .status-badge.work { background: #2e7d32; color: #ffffff; }
 
-        .status-badge.work {
-            color: #2e7d32;
-            /* 绿色 */
-            background: rgba(46, 125, 50, 0.05);
-        }
-
+        /* 侧边栏：休=红底白字，班=绿底白字 */
         .side-status-badge {
             display: inline-block;
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 700;
             padding: 2px 6px;
             border-radius: 4px;
             color: #ffffff;
@@ -461,14 +474,8 @@
             margin-right: 2px;
             vertical-align: middle;
         }
-
-        .side-status-badge.rest {
-            background-color: var(--primary-red);
-        }
-
-        .side-status-badge.work {
-            background-color: var(--primary-green);
-        }
+        .side-status-badge.rest { background: #d32f2f; }
+        .side-status-badge.work { background: #2e7d32; }
 
         /*================ 右侧边栏 ================*/
         .sidebar {
@@ -511,7 +518,7 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
         .detail-row {
@@ -560,73 +567,47 @@
             flex: 1;
         }
 
-        .side-fest-desc {
-            color: #000000;
-            font-size: 0.8rem;
-            margin-left: 2px;
-            display: inline;
-        }
-
-        .side-fest-anniv {
-            color: #000000;
-            font-weight: bold;
-            display: inline;
-            margin-left: 5px;
-        }
-
-        /* 黄历宜忌模块 */
+         /* 黄历宜忘模块（日历区域下方） */
         .almanac {
             display: flex;
-            gap: 12px;
-            margin-top: 20px;
-            /* 向下移 */
-            margin-bottom: auto;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 12px;
+            width: 100%;
         }
 
         .almanac-col {
-            flex: 1;
-            padding: 16px 12px;
-            border-radius: 12px;
-            text-align: center;
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+            gap: 10px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            width: 100%;
         }
 
-        .almanac-col.yi {
-            background: #f1f8e9;
-            /* 浅绿色背景 */
-        }
-
-        .almanac-col.ji {
-            background: #fff4f4;
-            /* 浅红色背景 */
-        }
+        .almanac-col.yi { background: #f1f8e9; }
+        .almanac-col.ji { background: #fff4f4; }
 
         .almanac-title {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 800;
-            margin-bottom: 10px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 1.2em;
         }
 
-        .almanac-col.yi .almanac-title {
-            color: var(--primary-green);
-        }
-
-        .almanac-col.ji .almanac-title {
-            color: var(--primary-red);
-        }
+        .almanac-col.yi .almanac-title { color: var(--primary-green); }
+        .almanac-col.ji .almanac-title { color: var(--primary-red); }
 
         .almanac-txt {
             font-size: 0.8rem;
-            line-height: 1.5;
+            line-height: 1.6;
+            flex: 1;
         }
 
-        .almanac-col.yi .almanac-txt {
-            color: var(--primary-green);
-            font-weight: 500;
-        }
-
-        .almanac-col.ji .almanac-txt {
-            color: var(--primary-red);
-        }
+        .almanac-col.yi .almanac-txt { color: var(--primary-green); font-weight: 500; }
+        .almanac-col.ji .almanac-txt { color: var(--primary-red); }
 
         /* 假日及补班样式 */
         .day-cell.holiday .day-num {
@@ -648,6 +629,7 @@
 
         /* 强制手机端布局逻辑 */
         .view-mobile .app-container {
+            display: flex;
             flex-direction: column;
             width: 100%;
             max-width: none;
@@ -658,10 +640,27 @@
         }
 
         .view-mobile .calendar-main {
+            order: 1;
             border-right: none;
             padding: 15px 10px;
             display: flex;
             flex-direction: column;
+        }
+
+        .view-mobile .sidebar {
+            order: 2;
+            width: 100%;
+            padding: 15px 10px;
+            border-top: 1px solid var(--border-color);
+            background: #fdfdfd;
+        }
+
+        .view-mobile .almanac {
+            order: 3; /* 将宜忌移至侧边栏（及节日）下方 */
+            border-right: none;
+            padding: 15px 10px;
+            background: #fff;
+            margin-top: 0;
         }
 
         .view-mobile .calendar-header {
@@ -744,6 +743,11 @@
 
         .view-mobile .holiday-list {
             display: none;
+        }
+
+        .view-mobile .almanac {
+            order: 6;  /* 排在 calendar-grid(order:5) 之后，显示在日历下方 */
+            margin-top: 8px;
         }
 
         @media (max-width: 950px) {
@@ -835,6 +839,19 @@
             <div class="calendar-grid" id="gridBody">
                 <!-- 动态生成日期格子 -->
             </div>
+
+        </div>
+
+        <!-- 宜忌区域 (移动到此处作为 app-container 直接子元素，方便在手机端设置 order) -->
+        <div class="almanac">
+            <div class="almanac-col yi">
+                <div class="almanac-title">宜</div>
+                <div class="almanac-txt" id="sideYi">解除 动土 安床 祭祀</div>
+            </div>
+            <div class="almanac-col ji">
+                <div class="almanac-title">忌</div>
+                <div class="almanac-txt" id="sideJi">嫁娶 出行 入宅 安葬</div>
+            </div>
         </div>
 
         <!-- 右侧详情 -->
@@ -873,17 +890,6 @@
                 </div>
             </div>
 
-            <div class="almanac">
-                <div class="almanac-col yi">
-                    <div class="almanac-title">宜</div>
-                    <div class="almanac-txt" id="sideYi">解除 动土 安床 祭祀</div>
-                </div>
-                <div class="almanac-col ji">
-                    <div class="almanac-title">忌</div>
-                    <div class="almanac-txt" id="sideJi">嫁娶 出行 入宅 安葬</div>
-                </div>
-            </div>
-
             <div class="footer">中●巴●美 极简万年历 · Webber匠心打造</div>
         </aside>
     </div>
@@ -897,7 +903,7 @@
             ZODIAC_BY_LICHUN: false,   // 生肖切换：false=以春节切换；true=以立春切换
             SHOW_OTHER_MONTH_DAYS: false, // 是否显示非本月日期预览
             LOCAL: 'BR',               // 本地休假日地区选项：'CN' (中国), 'BR' (巴西), 'US' (美国)
-            SHOW_LOCAL_HOLIDAY_ONLY: true// 当为true时，日历格子仅显示LOCAL配置项对应国家的休班标识
+            SHOW_LOCAL_HOLIDAY_ONLY: false// 当为true时，日历格子仅显示LOCAL配置项对应国家的休班标识
         };
 
         /**
@@ -1727,6 +1733,7 @@
                 const globalStatuses = this.getGlobalHolidayStatus(d, false);
                 const hStatusElem = document.getElementById('sideHolidayStatus');
                 if (globalStatuses.length > 0) {
+                    // 侧边栏保持完整"休[巴]"格式，红/绿底白字
                     hStatusElem.innerHTML = globalStatuses.map(s => `<span class="side-status-badge ${s.type}">${s.text}</span>`).join(' ');
                     hStatusElem.style.color = "inherit";
                 } else {
@@ -1914,9 +1921,10 @@
                 countries.forEach(country => {
                     if (HolidayInfo[country] && HolidayInfo[country][y]) {
                         if (HolidayInfo[country][y].holidays.includes(mmdd)) {
-                            statuses.push({ text: `休[${tags[country]}]`, type: "rest" });
+                            // text: 侧边栏完整格式； shortText: 日历格子内显示国家简称
+                            statuses.push({ text: `休[${tags[country]}]`, shortText: tags[country], type: "rest" });
                         } else if (HolidayInfo[country][y].extraWorkdays.includes(mmdd)) {
-                            statuses.push({ text: `班[${tags[country]}]`, type: "work" });
+                            statuses.push({ text: `班[${tags[country]}]`, shortText: tags[country], type: "work" });
                         }
                     }
                 });
@@ -1926,7 +1934,8 @@
             renderStatusBadge(container, date) {
                 const statuses = this.getGlobalHolidayStatus(date, CONFIG.SHOW_LOCAL_HOLIDAY_ONLY);
                 statuses.forEach(s => {
-                    this.addBadge(container, s.text, s.type);
+                    // 日历格子内显示国家简称（中/巴/美），红底=休，绿底=班
+                    this.addBadge(container, s.shortText, s.type);
                 });
             }
 
