@@ -358,6 +358,38 @@
             border: 1px solid #ffebee;
         }
 
+        /* 调休标识样式 */
+        .status-badge-container {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            align-items: flex-end;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .status-badge {
+            font-size: 0.6rem;
+            font-weight: 800;
+            line-height: 1;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .status-badge.rest {
+            color: var(--primary-red);
+            background: rgba(211, 47, 47, 0.05);
+        }
+
+        .status-badge.work {
+            color: #2e7d32;
+            /* 绿色 */
+            background: rgba(46, 125, 50, 0.05);
+        }
+
         /*================ 右侧边栏 ================*/
         .sidebar {
             width: 320px;
@@ -732,7 +764,7 @@
                 </div>
             </div>
 
-            <div class="footer">极简万年历 · 匠心打造</div>
+            <div class="footer">中●巴●美 极简万年历 · Webber匠心打造</div>
         </aside>
     </div>
 
@@ -857,6 +889,20 @@
                     "04-24": "种族灭绝纪念(Genocide Remembrance Day,加州节日，该纪念日在覆盖多个群体的同时，与亚美尼亚种族灭绝纪念日共享同一个日期，并且亚美尼亚社区的遭遇是其核心纪念内容之一。)",
                     "1850-09-09": "加州入美纪念日(Admission Day,加州节日，1850年9月9日加利福尼亚正式加入联邦，成为美国的第31个州)"
                 }
+            }
+        };
+
+        /**
+         * 调休假配置
+         */
+        const HolidayInfo = {
+            "巴西": {
+                "2025": { holidays: ['01-01', '01-28', '01-29', '01-30', '01-31', '04-04', '05-01', '05-02', '05-30', '09-30', '10-01', '10-02', '10-03'], extraWorkdays: [] },
+                "2026": { holidays: ['01-01', '02-16', '02-17', '02-18', '02-19', '04-06', '05-01', '05-04', '06-19', '09-25', '10-01', '10-02', '10-05'], extraWorkdays: [] }
+            },
+            "中国": {
+                "2025": { holidays: ['01-01', '01-28', '01-29', '01-30', '01-31', '02-03', '02-04', '04-04', '05-01', '05-02', '05-05', '06-02', '09-30', '10-01', '10-02', '10-03', '10-06', '10-07', '10-08'], extraWorkdays: ['01-26', '02-08', '04-27', '09-28', '10-11'] },
+                "2026": { holidays: ['01-01', '01-02', '02-16', '02-17', '02-18', '02-19', '02-20', '02-23', '04-06', '05-01', '05-04', '05-05', '06-19', '09-25', '10-01', '10-02', '10-05', '10-06', '10-07'], extraWorkdays: ['01-04', '02-14', '02-28', '05-09', '09-20', '10-10'] }
             }
         };
 
@@ -1040,6 +1086,14 @@
                 num.className = 'day-num';
                 num.innerText = date.getDate();
                 div.appendChild(num);
+
+                // 调休标识容器
+                const badgeContainer = document.createElement('div');
+                badgeContainer.className = 'status-badge-container';
+                div.appendChild(badgeContainer);
+
+                // 调休标识
+                this.renderStatusBadge(badgeContainer, date);
 
                 // 农历/24节气
                 const lunarDiv = document.createElement('div');
@@ -1542,10 +1596,10 @@
                     document.body.appendChild(textArea);
                     textArea.focus();
                     textArea.select();
-                    
+
                     const successful = document.execCommand('copy');
                     document.body.removeChild(textArea);
-                    
+
                     if (successful) {
                         this.showToast();
                     }
@@ -1578,6 +1632,36 @@
                     }
                 }
                 return res;
+            }
+
+            renderStatusBadge(container, date) {
+                const y = date.getFullYear().toString();
+                const mmdd = this.formatDate(date, 'MM-DD');
+
+                // 检查中国
+                if (HolidayInfo["中国"][y]) {
+                    if (HolidayInfo["中国"][y].holidays.includes(mmdd)) {
+                        this.addBadge(container, "休[中]", "rest");
+                    } else if (HolidayInfo["中国"][y].extraWorkdays.includes(mmdd)) {
+                        this.addBadge(container, "班[中]", "work");
+                    }
+                }
+
+                // 检查巴西
+                if (HolidayInfo["巴西"][y]) {
+                    if (HolidayInfo["巴西"][y].holidays.includes(mmdd)) {
+                        this.addBadge(container, "休[巴]", "rest");
+                    } else if (HolidayInfo["巴西"][y].extraWorkdays.includes(mmdd)) {
+                        this.addBadge(container, "班[巴]", "work");
+                    }
+                }
+            }
+
+            addBadge(container, text, type) {
+                const badge = document.createElement('div');
+                badge.className = `status-badge ${type}`;
+                badge.innerText = text;
+                container.appendChild(badge);
             }
         }
 
