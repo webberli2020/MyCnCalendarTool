@@ -11,6 +11,7 @@
         :root {
             --primary-red: #d32f2f;
             --primary-blue: #1976d2;
+            --primary-green: #2e7d32;
             --bg-color: #f7f9fa;
             --card-bg: #ffffff;
             --text-main: #2c3e50;
@@ -570,11 +571,11 @@
         }
 
         .almanac-col.yi {
-            background: #fff4f4;
+            background: #f1f8e9; /* 浅绿色背景 */
         }
 
         .almanac-col.ji {
-            background: #f4f6f7;
+            background: #fff4f4; /* 浅红色背景 */
         }
 
         .almanac-title {
@@ -584,11 +585,11 @@
         }
 
         .almanac-col.yi .almanac-title {
-            color: var(--primary-red);
+            color: var(--primary-green);
         }
 
         .almanac-col.ji .almanac-title {
-            color: var(--text-sec);
+            color: var(--primary-red);
         }
 
         .almanac-txt {
@@ -597,12 +598,12 @@
         }
 
         .almanac-col.yi .almanac-txt {
-            color: var(--primary-red);
+            color: var(--primary-green);
             font-weight: 500;
         }
 
         .almanac-col.ji .almanac-txt {
-            color: var(--text-sec);
+            color: var(--primary-red);
         }
 
         /* 页脚 */
@@ -826,6 +827,10 @@
                     <span class="detail-lbl">生肖</span>
                     <span class="detail-val" id="sideZodiac">马 🐴</span>
                 </div>
+                <div class="detail-row" id="rowLeapContext" style="display:none; align-items: start;">
+                    <span class="detail-lbl" style="color: var(--primary-blue);">闰纪</span>
+                    <span class="detail-val" id="sideLeapContext" style="font-size: 0.8rem; line-height: 1.4; color: var(--primary-blue);"></span>
+                </div>
                 <div class="detail-row">
                     <span class="detail-lbl">节日</span>
                     <span class="detail-festivals" id="sideFestivals">无节日</span>
@@ -1028,6 +1033,13 @@
                     const opt = document.createElement('option');
                     opt.value = y;
                     opt.innerText = y + '年';
+                    
+                    const leapMonth = LunarYear.fromYear(y).getLeapMonth();
+                    if (leapMonth > 0) {
+                        opt.style.color = 'var(--primary-blue)';
+                        opt.style.fontWeight = 'bold';
+                    }
+                    
                     select.appendChild(opt);
                 }
             }
@@ -1084,6 +1096,20 @@
 
                 document.getElementById('yearSelect').value = year;
                 document.getElementById('monthSelect').value = month;
+
+                // 动态高亮含有农历闰月的公历月份
+                const monthSelectOpts = document.getElementById('monthSelect').options;
+                for (let i = 0; i < 12; i++) {
+                    const test1 = Lunar.fromSolar(Solar.fromYmd(year, i + 1, 5)).getMonth() < 0;
+                    const test2 = Lunar.fromSolar(Solar.fromYmd(year, i + 1, 25)).getMonth() < 0;
+                    if (test1 || test2) {
+                        monthSelectOpts[i].style.color = 'var(--primary-blue)';
+                        monthSelectOpts[i].style.fontWeight = 'bold';
+                    } else {
+                        monthSelectOpts[i].style.color = '';
+                        monthSelectOpts[i].style.fontWeight = '';
+                    }
+                }
 
                 this.renderHeaders();
                 this.renderGrid(year, month);
@@ -1192,8 +1218,14 @@
                     lunarDiv.innerText = jq;
                     lunarDiv.classList.add('jieqi');
                 } else if (lunarDayStr === '初一') {
-                    // 2. 其次 农历月份 (如 正月、闰六月，蓝色加粗)
-                    lunarDiv.innerText = lunar.getMonthInChinese() + '月';
+                    // 2. 其次 农历月份 (如 正月大、闰六月小，蓝色加粗)
+                    const mName = lunar.getMonthInChinese();
+                    // 判断当前农历月的大小：当前（初一）往后推29天
+                    const testDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 29);
+                    const testLunarStr = Lunar.fromSolar(Solar.fromDate(testDate)).getDayInChinese();
+                    const mSize = (testLunarStr === '三十') ? '大' : '小';
+                    
+                    lunarDiv.innerText = mName + '月' + mSize;
                     lunarDiv.classList.add('chuyi');
                 } else {
                     // 3. 最后保底：常规农历日期
@@ -1583,7 +1615,15 @@
                 // 农历与干支
                 const lm = lunar.getMonthInChinese();
                 const ld = lunar.getDayInChinese();
-                document.getElementById('sideLunar').innerText = `${lm}月${ld}`;
+                
+                // 判断侧边栏选中日期所在月的大小：找到本月大/小的逻辑。
+                // 通过该农历日期推算出初一的阳历，再加29天看农历
+                const dOff = lunar.getDay() - 1; // 距离初一的天数
+                const testDate = new Date(d.getFullYear(), d.getMonth(), d.getDate() - dOff + 29);
+                const testLunarStr = Lunar.fromSolar(Solar.fromDate(testDate)).getDayInChinese();
+                const mSize = (testLunarStr === '三十') ? '大' : '小';
+                
+                document.getElementById('sideLunar').innerText = `${lm}月${mSize} ${ld}`;
 
                 const gY = lunar.getYearInGanZhi() + '年';
                 const gM = lunar.getMonthInGanZhi() + '月';
@@ -1593,6 +1633,30 @@
                 // 生肖
                 const z = this.getZodiac(lunar);
                 document.getElementById('sideZodiac').innerText = `${z} ${ZODIAC_EMOJI[z]}`;
+
+                // 闰月历史与预测提示
+                const rowLeap = document.getElementById('rowLeapContext');
+                if (lunar.getMonth() < 0) {
+                    rowLeap.style.display = 'flex';
+                    let prevY = lunar.getYear() - 1;
+                    let prevStr = '无';
+                    while (prevY >= 1900) {
+                        let lm = LunarYear.fromYear(prevY).getLeapMonth();
+                        if (lm > 0) { prevStr = `${prevY}年闰${LunarUtil.MONTH[lm]}月`; break; }
+                        prevY--;
+                    }
+                    
+                    let nextY = lunar.getYear() + 1;
+                    let nextStr = '无';
+                    while (nextY <= 2100) {
+                        let lm = LunarYear.fromYear(nextY).getLeapMonth();
+                        if (lm > 0) { nextStr = `${nextY}年闰${LunarUtil.MONTH[lm]}月`; break; }
+                        nextY++;
+                    }
+                    document.getElementById('sideLeapContext').innerText = `上次是${prevStr}\n下次是${nextStr}`;
+                } else {
+                    rowLeap.style.display = 'none';
+                }
 
                 // 节假日汇总
                 const hols = this.getAllHolidays(d);
@@ -1663,9 +1727,11 @@
                 try {
                     const yi = lunar.getDayYi();
                     const ji = lunar.getDayJi();
-
-                    document.getElementById('sideYi').innerText = yi && yi.length > 0 ? yi.slice(0, 6).join(' ') : '诸事不宜';
-                    document.getElementById('sideJi').innerText = ji && ji.length > 0 ? ji.slice(0, 6).join(' ') : '无所忌讳';
+					
+					//显示黄历中的宜忌事项，将数组中的前6项显示在页面上(后改为全部显示)，如果没有则显示默认文字
+                    //document.getElementById('sideYi').innerText = yi && yi.length > 0 ? yi.slice(0, 6).join(' ') : '诸事不宜';
+                    document.getElementById('sideYi').innerText = yi && yi.length > 0 ? yi.join(' ') : '诸事不宜';
+                    document.getElementById('sideJi').innerText = ji && ji.length > 0 ? ji.join(' ') : '无所忌讳';
                 } catch (e) {
                     document.getElementById('sideYi').innerText = '解除 动土 祭祀';
                     document.getElementById('sideJi').innerText = '嫁娶 出行 入宅';
@@ -1686,15 +1752,21 @@
                 const yi = document.getElementById('sideYi').innerText;
                 const ji = document.getElementById('sideJi').innerText;
 
+                let leapContext = '';
+                const rowLeap = document.getElementById('rowLeapContext');
+                if (rowLeap.style.display !== 'none') {
+                    leapContext = `\n					闰纪：${document.getElementById('sideLeapContext').innerText.replace(/\n/, '，')}`;
+                }
+
                 const text = `【日期详情】
-阳历：${fullDate} ${week}
-农历：${lunar}
-干支：${pillars}
-生肖：${zodiac}
-周数：${document.getElementById('dateStatus').innerText}
-节日：${festivals}
-宜：${yi}
-忌：${ji}`;
+					阳历：${fullDate} ${week}
+					农历：${lunar}
+					干支：${pillars}
+					生肖：${zodiac}${leapContext}
+					周数：${document.getElementById('dateStatus').innerText}
+					节日：${festivals}
+					宜：${yi}
+					忌：${ji}`;
 
                 this.doCopy(text);
             }
