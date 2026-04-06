@@ -124,8 +124,39 @@
 
         .month-year {
             display: flex;
-            align-items: baseline;
-            gap: 12px;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .controls-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .other-fest-toggle {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            margin-left: 5px;
+        }
+
+        .other-fest-toggle:hover {
+            background: #f5f5f5;
+        }
+
+        .other-fest-toggle input {
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            margin: 0;
         }
 
         .month-lbl {
@@ -699,11 +730,16 @@
         <div class="calendar-main">
             <header class="calendar-header">
                 <div class="month-year">
-                    <div class="year-lbl-box">
-                        <select id="yearSelect" class="year-select"
-                            onchange="engine.viewDate.setFullYear(parseInt(this.value)); engine.render();"></select>
-                        <select id="monthSelect" class="month-select"
-                            onchange="engine.changeMonth(parseInt(this.value) - engine.viewDate.getMonth())"></select>
+                    <div class="controls-row">
+                        <div class="year-lbl-box">
+                            <select id="yearSelect" class="year-select"
+                                onchange="engine.viewDate.setFullYear(parseInt(this.value)); engine.render();"></select>
+                            <select id="monthSelect" class="month-select"
+                                onchange="engine.changeMonth(parseInt(this.value) - engine.viewDate.getMonth())"></select>
+                        </div>
+                        <label class="other-fest-toggle">
+                            <input type="checkbox" id="chkOtherFest" onchange="engine.render()"> 其他节日
+                        </label>
                     </div>
                     <div id="dateStatus" class="date-status"></div>
                 </div>
@@ -1095,53 +1131,61 @@
                 // 调休标识
                 this.renderStatusBadge(badgeContainer, date);
 
-                // 农历/24节气
+                // 农历/24节气 文字渲染逻辑 (优先级：24节气 > 初一“X月” > 农历日期)
                 const lunarDiv = document.createElement('div');
                 lunarDiv.className = 'lunar-info';
 
-                const jieQi = lunar.getJieQi();
-                if (jieQi) {
-                    lunarDiv.innerText = jieQi;
+                const jq = lunar.getJieQi();
+                const lunarDayStr = lunar.getDayInChinese();
+
+                if (jq) {
+                    // 1. 优先 24 节气 (红色加粗)
+                    lunarDiv.innerText = jq;
                     lunarDiv.classList.add('jieqi');
+                } else if (lunarDayStr === '初一') {
+                    // 2. 其次 农历月份 (如 正月、闰六月，蓝色加粗)
+                    lunarDiv.innerText = lunar.getMonthInChinese() + '月';
+                    lunarDiv.classList.add('chuyi');
                 } else {
-                    const lunarDayStr = lunar.getDayInChinese();
-                    if (lunarDayStr === '初一') {
-                        lunarDiv.innerText = lunar.getMonthInChinese() + '月';
-                        lunarDiv.classList.add('chuyi');
-                    } else {
-                        lunarDiv.innerText = lunarDayStr;
-                    }
+                    // 3. 最后保底：常规农历日期
+                    lunarDiv.innerText = lunarDayStr;
                 }
                 div.appendChild(lunarDiv);
 
-                // 节日/纪念日标识 (全量显示，分行)
+                // 节日/纪念日标识系统
                 const hols = this.getAllHolidays(date);
-                if (hols.length > 0) {
-                    const holList = document.createElement('div');
-                    holList.className = 'holiday-list';
-                    hols.forEach(hol => {
-                        const tag = document.createElement('div');
-                        let tagClass = hol.css;
+                const holList = document.createElement('div');
+                holList.className = 'holiday-list';
 
-                        // Color override logic
-                        if (hol.name.includes('🎂')) {
-                            tagClass = 'tag-birthday';
-                        } else if (hol.name.includes('忌日') || hol.name.includes('🕯') || hol.name.includes('黑色星期五')) {
-                            tagClass = 'tag-memorial';
-                        } else if (hol.name.startsWith('中·')) {
-                            tagClass = 'tag-china';
-                        } else if (hol.name.startsWith('美·')) {
-                            tagClass = 'tag-us';
-                        } else if (hol.name.startsWith('巴·')) {
-                            tagClass = 'tag-brazil';
-                        }
+                // 1. 本项目定义的主要节假日
+                hols.forEach(hol => {
+                    const tag = document.createElement('div');
+                    let tagClass = hol.css;
+                    if (hol.name.includes('🎂')) tagClass = 'tag-birthday';
+                    else if (hol.name.includes('忌日') || hol.name.includes('🕯') || hol.name.includes('黑色星期五')) tagClass = 'tag-memorial';
+                    else if (hol.name.startsWith('中·')) tagClass = 'tag-china';
+                    else if (hol.name.startsWith('美·')) tagClass = 'tag-us';
+                    else if (hol.name.startsWith('巴·')) tagClass = 'tag-brazil';
 
-                        tag.className = `holiday-tag ${tagClass}`;
-                        // 日历格子中不显示括号及其内容
-                        let displayName = hol.name.split('(')[0].split('（')[0].replace(/^[中美巴]·/, '');
-                        tag.innerText = displayName;
-                        holList.appendChild(tag);
+                    tag.className = `holiday-tag ${tagClass}`;
+                    let displayName = hol.name.split('(')[0].split('（')[0].replace(/^[中美巴]·/, '');
+                    tag.innerText = displayName;
+                    holList.appendChild(tag);
+                });
+
+                // 2. 其他节日 (由库提供的杂项节日)，显示完整名称并带上 [其]
+                const showOther = document.getElementById('chkOtherFest').checked;
+                if (showOther) {
+                    const others = [...lunar.getOtherFestivals(), ...solar.getOtherFestivals()];
+                    others.forEach(otherName => {
+                        const otherTag = document.createElement('div');
+                        otherTag.className = 'holiday-tag'; // 默认灰色背景
+                        otherTag.innerText = `[其]${otherName}`;
+                        holList.appendChild(otherTag);
                     });
+                }
+
+                if (holList.children.length > 0) {
                     div.appendChild(holList);
                 }
 
@@ -1503,12 +1547,10 @@
 
                 // 节假日汇总
                 const hols = this.getAllHolidays(d);
-                const festElem = document.getElementById('sideFestivals');
-                if (hols.length === 0) {
-                    festElem.innerText = "无节日";
-                    festElem.style.color = "var(--text-sec)";
-                } else {
-                    festElem.innerHTML = hols.map((h, idx) => {
+                let festHtml = '';
+
+                if (hols.length > 0) {
+                    festHtml += hols.map((h, idx) => {
                         // 同步日历格子的色彩逻辑
                         let tagClass = h.css;
                         if (h.name.includes('🎂')) tagClass = 'tag-birthday';
@@ -1542,6 +1584,29 @@
                             </div>
                         `;
                     }).join('');
+                }
+
+                // 添加“其他节日”到详情
+                const showOther = document.getElementById('chkOtherFest').checked;
+                if (showOther) {
+                    const others = [...lunar.getOtherFestivals(), ...solar.getOtherFestivals()];
+                    others.forEach(otherName => {
+                        festHtml += `
+                            <div class="side-fest-item">
+                                <div class="side-fest-content">
+                                    <span class="holiday-tag">[其]${otherName}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                const festElem = document.getElementById('sideFestivals');
+                if (festHtml === '') {
+                    festElem.innerText = "无节日";
+                    festElem.style.color = "var(--text-sec)";
+                } else {
+                    festElem.innerHTML = festHtml;
                     festElem.style.color = "inherit";
                 }
 
