@@ -571,11 +571,13 @@
         }
 
         .almanac-col.yi {
-            background: #f1f8e9; /* 浅绿色背景 */
+            background: #f1f8e9;
+            /* 浅绿色背景 */
         }
 
         .almanac-col.ji {
-            background: #fff4f4; /* 浅红色背景 */
+            background: #fff4f4;
+            /* 浅红色背景 */
         }
 
         .almanac-title {
@@ -604,6 +606,15 @@
 
         .almanac-col.ji .almanac-txt {
             color: var(--primary-red);
+        }
+
+        /* 假日及补班样式 */
+        .day-cell.holiday .day-num {
+            color: var(--primary-red) !important;
+        }
+
+        .day-cell.workday .day-num {
+            color: var(--text-main) !important;
         }
 
         /* 页脚 */
@@ -829,7 +840,8 @@
                 </div>
                 <div class="detail-row" id="rowLeapContext" style="display:none; align-items: start;">
                     <span class="detail-lbl" style="color: var(--primary-blue);">闰纪</span>
-                    <span class="detail-val" id="sideLeapContext" style="font-size: 0.8rem; line-height: 1.4; color: var(--primary-blue);"></span>
+                    <span class="detail-val" id="sideLeapContext"
+                        style="font-size: 0.8rem; line-height: 1.4; color: var(--primary-blue);"></span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-lbl">节日</span>
@@ -859,7 +871,8 @@
         const CONFIG = {
             START_DAY: 1,              // 每周起始日：1-6代表周一至周六，7代表周日
             ZODIAC_BY_LICHUN: false,   // 生肖切换：false=以春节切换；true=以立春切换
-            SHOW_OTHER_MONTH_DAYS: false // 是否显示非本月日期预览
+            SHOW_OTHER_MONTH_DAYS: false, // 是否显示非本月日期预览
+            LOCAL: 'BR'                // 本地休假日地区选项：'CN' (中国), 'BR' (巴西), 'US' (美国)
         };
 
         /**
@@ -987,6 +1000,10 @@
             "中国": {
                 "2025": { holidays: ['01-01', '01-28', '01-29', '01-30', '01-31', '02-03', '02-04', '04-04', '05-01', '05-02', '05-05', '06-02', '09-30', '10-01', '10-02', '10-03', '10-06', '10-07', '10-08'], extraWorkdays: ['01-26', '02-08', '04-27', '09-28', '10-11'] },
                 "2026": { holidays: ['01-01', '01-02', '02-16', '02-17', '02-18', '02-19', '02-20', '02-23', '04-06', '05-01', '05-04', '05-05', '06-19', '09-25', '10-01', '10-02', '10-05', '10-06', '10-07'], extraWorkdays: ['01-04', '02-14', '02-28', '05-09', '09-20', '10-10'] }
+            },
+            "美国": {
+                "2025": { holidays: [], extraWorkdays: [] },
+                "2026": { holidays: ['01-01', '02-16', '02-17', '02-18', '04-06', '05-01', '06-19', '10-01', '10-02', '10-05', '11-26', '11-27', '12-25'], extraWorkdays: [] }
             }
         };
 
@@ -1033,13 +1050,13 @@
                     const opt = document.createElement('option');
                     opt.value = y;
                     opt.innerText = y + '年';
-                    
+
                     const leapMonth = LunarYear.fromYear(y).getLeapMonth();
                     if (leapMonth > 0) {
                         opt.style.color = 'var(--primary-blue)';
                         opt.style.fontWeight = 'bold';
                     }
-                    
+
                     select.appendChild(opt);
                 }
             }
@@ -1192,6 +1209,29 @@
                 const dow = date.getDay();
                 if (dow === 0 || dow === 6) div.classList.add('weekend');
 
+                // 本地休假/上班判定逻辑
+                const yStr = date.getFullYear().toString();
+                const mmdd = this.formatDate(date, 'MM-DD');
+                let isHoliday = false;
+                let isWorkday = false;
+
+                const localName = { "CN": "中国", "BR": "巴西", "US": "美国" }[CONFIG.LOCAL] || "中国";
+
+                if (HolidayInfo[localName] && HolidayInfo[localName][yStr]) {
+                    if (HolidayInfo[localName][yStr].holidays.includes(mmdd)) isHoliday = true;
+                    if (HolidayInfo[localName][yStr].extraWorkdays.includes(mmdd)) isWorkday = true;
+                } else {
+                    // 若无调休细节(如该年份未配置)，只要含对应国家的节日即为 holiday
+                    const allH = this.getAllHolidays(date);
+                    const prefix = { "中国": "中·", "巴西": "巴·", "美国": "美·" }[localName];
+                    if (prefix && allH.some(h => h.name.startsWith(prefix))) {
+                        isHoliday = true;
+                    }
+                }
+
+                if (isHoliday) div.classList.add('holiday');
+                else if (isWorkday) div.classList.add('workday');
+
                 // 数字
                 const num = document.createElement('div');
                 num.className = 'day-num';
@@ -1224,7 +1264,7 @@
                     const testDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 29);
                     const testLunarStr = Lunar.fromSolar(Solar.fromDate(testDate)).getDayInChinese();
                     const mSize = (testLunarStr === '三十') ? '大' : '小';
-                    
+
                     lunarDiv.innerText = mName + '月' + mSize;
                     lunarDiv.classList.add('chuyi');
                 } else {
@@ -1615,14 +1655,14 @@
                 // 农历与干支
                 const lm = lunar.getMonthInChinese();
                 const ld = lunar.getDayInChinese();
-                
+
                 // 判断侧边栏选中日期所在月的大小：找到本月大/小的逻辑。
                 // 通过该农历日期推算出初一的阳历，再加29天看农历
                 const dOff = lunar.getDay() - 1; // 距离初一的天数
                 const testDate = new Date(d.getFullYear(), d.getMonth(), d.getDate() - dOff + 29);
                 const testLunarStr = Lunar.fromSolar(Solar.fromDate(testDate)).getDayInChinese();
                 const mSize = (testLunarStr === '三十') ? '大' : '小';
-                
+
                 document.getElementById('sideLunar').innerText = `${lm}月${mSize} ${ld}`;
 
                 const gY = lunar.getYearInGanZhi() + '年';
@@ -1645,7 +1685,7 @@
                         if (lm > 0) { prevStr = `${prevY}年闰${LunarUtil.MONTH[lm]}月`; break; }
                         prevY--;
                     }
-                    
+
                     let nextY = lunar.getYear() + 1;
                     let nextStr = '无';
                     while (nextY <= 2100) {
@@ -1727,8 +1767,8 @@
                 try {
                     const yi = lunar.getDayYi();
                     const ji = lunar.getDayJi();
-					
-					//显示黄历中的宜忌事项，将数组中的前6项显示在页面上(后改为全部显示)，如果没有则显示默认文字
+
+                    //显示黄历中的宜忌事项，将数组中的前6项显示在页面上(后改为全部显示)，如果没有则显示默认文字
                     //document.getElementById('sideYi').innerText = yi && yi.length > 0 ? yi.slice(0, 6).join(' ') : '诸事不宜';
                     document.getElementById('sideYi').innerText = yi && yi.length > 0 ? yi.join(' ') : '诸事不宜';
                     document.getElementById('sideJi').innerText = ji && ji.length > 0 ? ji.join(' ') : '无所忌讳';
@@ -1824,23 +1864,19 @@
                 const y = date.getFullYear().toString();
                 const mmdd = this.formatDate(date, 'MM-DD');
 
-                // 检查中国
-                if (HolidayInfo["中国"][y]) {
-                    if (HolidayInfo["中国"][y].holidays.includes(mmdd)) {
-                        this.addBadge(container, "休[中]", "rest");
-                    } else if (HolidayInfo["中国"][y].extraWorkdays.includes(mmdd)) {
-                        this.addBadge(container, "班[中]", "work");
-                    }
-                }
+                // 统一检查中、巴、美
+                const countries = ["中国", "巴西", "美国"];
+                const tags = { "中国": "中", "巴西": "巴", "美国": "美" };
 
-                // 检查巴西
-                if (HolidayInfo["巴西"][y]) {
-                    if (HolidayInfo["巴西"][y].holidays.includes(mmdd)) {
-                        this.addBadge(container, "休[巴]", "rest");
-                    } else if (HolidayInfo["巴西"][y].extraWorkdays.includes(mmdd)) {
-                        this.addBadge(container, "班[巴]", "work");
+                countries.forEach(country => {
+                    if (HolidayInfo[country] && HolidayInfo[country][y]) {
+                        if (HolidayInfo[country][y].holidays.includes(mmdd)) {
+                            this.addBadge(container, `休[${tags[country]}]`, "rest");
+                        } else if (HolidayInfo[country][y].extraWorkdays.includes(mmdd)) {
+                            this.addBadge(container, `班[${tags[country]}]`, "work");
+                        }
                     }
-                }
+                });
             }
 
             addBadge(container, text, type) {
