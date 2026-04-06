@@ -178,11 +178,13 @@
         }
 
         .week-num {
-            color: #d32f2f; /* 深红色 */
+            color: #d32f2f;
+            /* 深红色 */
         }
 
         .day-count {
-            color: #1976d2; /* 深蓝色 */
+            color: #1976d2;
+            /* 深蓝色 */
         }
 
         .month-lbl {
@@ -649,7 +651,10 @@
             align-items: center;
         }
 
-        .view-mobile .year-lbl-box { order: 1; }
+        .view-mobile .year-lbl-box {
+            order: 1;
+        }
+
         .view-mobile .date-status {
             order: 2;
             background: #f0f2f5;
@@ -658,8 +663,14 @@
             color: var(--text-main);
             font-weight: 500;
         }
-        .view-mobile .other-fest-toggle { order: 3; }
-        .view-mobile .kb-hint { order: 4; }
+
+        .view-mobile .other-fest-toggle {
+            order: 3;
+        }
+
+        .view-mobile .kb-hint {
+            order: 4;
+        }
 
         .view-mobile .nav-controls {
             order: 3;
@@ -841,7 +852,7 @@
          * 配置选项
          */
         const CONFIG = {
-            START_MONDAY: true,        // 默认每周第一天是周一
+            START_DAY: 1,              // 每周起始日：1-6代表周一至周六，7代表周日
             ZODIAC_BY_LICHUN: false,   // 生肖切换：false=以春节切换；true=以立春切换
             SHOW_OTHER_MONTH_DAYS: false // 是否显示非本月日期预览
         };
@@ -1082,9 +1093,14 @@
             renderHeaders() {
                 const header = document.getElementById('weekHeaders');
                 header.innerHTML = '';
-                const names = CONFIG.START_MONDAY
-                    ? ["一", "二", "三", "四", "五", "六", "日"]
-                    : ["日", "一", "二", "三", "四", "五", "六"];
+
+                const allNames = ["日", "一", "二", "三", "四", "五", "六"];
+                const startIndex = CONFIG.START_DAY === 7 ? 0 : CONFIG.START_DAY;
+
+                const names = [];
+                for (let i = 0; i < 7; i++) {
+                    names.push(allNames[(startIndex + i) % 7]);
+                }
 
                 names.forEach(name => {
                     const div = document.createElement('div');
@@ -1102,10 +1118,11 @@
                 body.innerHTML = '';
 
                 const firstDay = new Date(year, month, 1);
-                let startFill = firstDay.getDay();
-                if (CONFIG.START_MONDAY) {
-                    startFill = startFill === 0 ? 6 : startFill - 1;
-                }
+                // getDay() 0=日, 1=一 ... 6=六
+                const firstDayOfWeek = firstDay.getDay();
+                const startDaySetting = CONFIG.START_DAY === 7 ? 0 : CONFIG.START_DAY; // 将 7 转为 0 对应 Date 对象
+
+                let startFill = (firstDayOfWeek - startDaySetting + 7) % 7;
 
                 const prevMonthLast = new Date(year, month, 0);
                 for (let i = startFill - 1; i >= 0; i--) {
