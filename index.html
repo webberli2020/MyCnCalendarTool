@@ -124,14 +124,23 @@
 
         .month-year {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            align-items: center;
         }
 
         .controls-row {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .kb-hint {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            background: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #eee;
         }
 
         .other-fest-toggle {
@@ -145,7 +154,6 @@
             padding: 4px 6px;
             border-radius: 4px;
             transition: background 0.2s;
-            margin-left: 5px;
         }
 
         .other-fest-toggle:hover {
@@ -157,6 +165,24 @@
             height: 14px;
             cursor: pointer;
             margin: 0;
+        }
+
+        .date-status {
+            font-size: 1.1rem;
+            color: var(--text-sec);
+            white-space: nowrap;
+            font-weight: 600;
+            margin-right: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .week-num {
+            color: #d32f2f; /* 深红色 */
+        }
+
+        .day-count {
+            color: #1976d2; /* 深蓝色 */
         }
 
         .month-lbl {
@@ -613,21 +639,27 @@
 
         /* 需求：从上往下依次是：年月选择、第几周和第几天显示、年月和今日切换按钮 */
         .view-mobile .month-year {
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+            width: 100%;
             order: 1;
         }
 
+        .view-mobile .controls-row {
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .view-mobile .year-lbl-box { order: 1; }
         .view-mobile .date-status {
             order: 2;
-            margin-left: 0;
             background: #f0f2f5;
             padding: 4px 12px;
             border-radius: 20px;
             color: var(--text-main);
             font-weight: 500;
         }
+        .view-mobile .other-fest-toggle { order: 3; }
+        .view-mobile .kb-hint { order: 4; }
 
         .view-mobile .nav-controls {
             order: 3;
@@ -737,11 +769,11 @@
                             <select id="monthSelect" class="month-select"
                                 onchange="engine.changeMonth(parseInt(this.value) - engine.viewDate.getMonth())"></select>
                         </div>
+                        <div id="dateStatus" class="date-status"></div>
                         <label class="other-fest-toggle">
-                            <input type="checkbox" id="chkOtherFest" onchange="engine.render()"> 其他节日
+                            <input type="checkbox" id="chkOtherFest" onchange="engine.render()"> 其他
                         </label>
                     </div>
-                    <div id="dateStatus" class="date-status"></div>
                 </div>
                 <div class="nav-controls">
                     <button class="btn-icon" onclick="engine.changeMonth(-12)">＜＜</button>
@@ -1529,7 +1561,7 @@
                 // 计算当前是第几周
                 const dayOfWeek = (startOfYear.getDay() === 0) ? 7 : startOfYear.getDay(); // 1=Mon, 7=Sun
                 const weekNum = Math.ceil((dayOfYear + (dayOfWeek - 1)) / 7);
-                document.getElementById('dateStatus').innerText = `第${weekNum}周 | 第${dayOfYear}天`;
+                document.getElementById('dateStatus').innerHTML = `<span class="week-num">第${weekNum}周</span> | <span class="day-count">第${dayOfYear}天</span>`;
 
                 // 农历与干支
                 const lm = lunar.getMonthInChinese();
