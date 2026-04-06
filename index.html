@@ -450,6 +450,26 @@
             background: rgba(46, 125, 50, 0.05);
         }
 
+        .side-status-badge {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #ffffff;
+            margin-left: 2px;
+            margin-right: 2px;
+            vertical-align: middle;
+        }
+
+        .side-status-badge.rest {
+            background-color: var(--primary-red);
+        }
+
+        .side-status-badge.work {
+            background-color: var(--primary-green);
+        }
+
         /*================ 右侧边栏 ================*/
         .sidebar {
             width: 320px;
@@ -844,6 +864,10 @@
                         style="font-size: 0.8rem; line-height: 1.4; color: var(--primary-blue);"></span>
                 </div>
                 <div class="detail-row">
+                    <span class="detail-lbl">假期</span>
+                    <span class="detail-val" id="sideHolidayStatus">无</span>
+                </div>
+                <div class="detail-row">
                     <span class="detail-lbl">节日</span>
                     <span class="detail-festivals" id="sideFestivals">无节日</span>
                 </div>
@@ -872,7 +896,8 @@
             START_DAY: 1,              // 每周起始日：1-6代表周一至周六，7代表周日
             ZODIAC_BY_LICHUN: false,   // 生肖切换：false=以春节切换；true=以立春切换
             SHOW_OTHER_MONTH_DAYS: false, // 是否显示非本月日期预览
-            LOCAL: 'BR'                // 本地休假日地区选项：'CN' (中国), 'BR' (巴西), 'US' (美国)
+            LOCAL: 'BR',               // 本地休假日地区选项：'CN' (中国), 'BR' (巴西), 'US' (美国)
+            SHOW_LOCAL_HOLIDAY_ONLY: true// 当为true时，日历格子仅显示LOCAL配置项对应国家的休班标识
         };
 
         /**
@@ -1698,6 +1723,17 @@
                     rowLeap.style.display = 'none';
                 }
 
+                // 侧边栏假期标识汇总
+                const globalStatuses = this.getGlobalHolidayStatus(d, false);
+                const hStatusElem = document.getElementById('sideHolidayStatus');
+                if (globalStatuses.length > 0) {
+                    hStatusElem.innerHTML = globalStatuses.map(s => `<span class="side-status-badge ${s.type}">${s.text}</span>`).join(' ');
+                    hStatusElem.style.color = "inherit";
+                } else {
+                    hStatusElem.innerText = "无";
+                    hStatusElem.style.color = "var(--text-sec)";
+                }
+
                 // 节假日汇总
                 const hols = this.getAllHolidays(d);
                 let festHtml = '';
@@ -1788,6 +1824,7 @@
                 const lunar = document.getElementById('sideLunar').innerText;
                 const pillars = document.getElementById('sidePillars').innerText;
                 const zodiac = document.getElementById('sideZodiac').innerText;
+                const holidayStatus = document.getElementById('sideHolidayStatus').innerText;
                 const festivals = document.getElementById('sideFestivals').innerText.replace(/\n\s+/g, '\n').trim();
                 const yi = document.getElementById('sideYi').innerText;
                 const ji = document.getElementById('sideJi').innerText;
@@ -1804,6 +1841,7 @@
 					干支：${pillars}
 					生肖：${zodiac}${leapContext}
 					周数：${document.getElementById('dateStatus').innerText}
+					假期：${holidayStatus}
 					节日：${festivals}
 					宜：${yi}
 					忌：${ji}`;
@@ -1860,22 +1898,35 @@
                 return res;
             }
 
-            renderStatusBadge(container, date) {
+            getGlobalHolidayStatus(date, onlyLocal) {
                 const y = date.getFullYear().toString();
                 const mmdd = this.formatDate(date, 'MM-DD');
+                let statuses = [];
+                let countries = ["中国", "巴西", "美国"];
 
-                // 统一检查中、巴、美
-                const countries = ["中国", "巴西", "美国"];
+                if (onlyLocal) {
+                    const localName = { "CN": "中国", "BR": "巴西", "US": "美国" }[CONFIG.LOCAL] || "中国";
+                    countries = [localName];
+                }
+
                 const tags = { "中国": "中", "巴西": "巴", "美国": "美" };
 
                 countries.forEach(country => {
                     if (HolidayInfo[country] && HolidayInfo[country][y]) {
                         if (HolidayInfo[country][y].holidays.includes(mmdd)) {
-                            this.addBadge(container, `休[${tags[country]}]`, "rest");
+                            statuses.push({ text: `休[${tags[country]}]`, type: "rest" });
                         } else if (HolidayInfo[country][y].extraWorkdays.includes(mmdd)) {
-                            this.addBadge(container, `班[${tags[country]}]`, "work");
+                            statuses.push({ text: `班[${tags[country]}]`, type: "work" });
                         }
                     }
+                });
+                return statuses;
+            }
+
+            renderStatusBadge(container, date) {
+                const statuses = this.getGlobalHolidayStatus(date, CONFIG.SHOW_LOCAL_HOLIDAY_ONLY);
+                statuses.forEach(s => {
+                    this.addBadge(container, s.text, s.type);
                 });
             }
 
