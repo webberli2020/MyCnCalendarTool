@@ -950,3 +950,17 @@ HTML 结构变更：
 宜忌黄历（沉底排布，利用页面最下方空间）
 你可以切换点击“手机端”按钮或用手机浏览器刷新一下页面，现在整个信息流是从上到下非常流畅顺滑的组合了！
 
+----
+移动端适配：必须添加viewport配置，使用width=device-width, initial-scale=1.0, viewport-fit=cover；全局重置margin/padding，设置html,body{min-height:100vh; overflow-x:hidden}；所有内容容器使用flex或grid自适应撑满，避免固定宽度；适配安全区域（env(safe-area-inset-*)）。
+我已完成移动端适配的优化工作，具体改动如下：
+
+Viewport 配置：将 viewport 元标签更新为 width=device-width, initial-scale=1.0, viewport-fit=cover，确保由于刘海屏等设计产生的安全区域能被正确识别。
+全局样式重置：确保 * 选择器包含 margin: 0; padding: 0; box-sizing: border-box;，消除浏览器默认间距干扰。
+基础容器优化：
+设置 html 和 body 为 min-height: 100vh; overflow-x: hidden;，防止出现水平滚动条并确保背景铺满。
+移除了移动端模式下 .app-container 的 max-width: 600px 限制，使其能自适应各种屏幕宽度。
+适配安全区域 (Safe Area)：
+在 body 及其 view-mobile 模式下，使用了 env(safe-area-inset-*) 属性，确保内容不会被系统状态栏、刘海屏或底部手势条遮挡。
+同步更新了固定定位元素（如左侧切换按钮 .view-switcher 和顶部的复制提示 #copyToast）的定位逻辑，使其自动避开安全区域。
+自适应布局：保持并增强了基於 Flex 和 Grid 的流动式布局，确保日历格子和侧边栏详情在不同尺寸的移动设备上都能自动撑满并合理分配空间。
+这些改动将显著提升应用在 iPhone (iOS) 和现代 Android 设备上的视觉表现和交互体验。

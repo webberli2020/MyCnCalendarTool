@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>中国农历万年历 MyCnCalendarTool</title>
     <!-- 引入外部轻量级JS库 (必须在同级目录存在) -->
     <script src="lunar.js"></script>
@@ -37,26 +37,29 @@
             justify-content: flex-start;
             align-items: center;
             min-height: 100vh;
-            /* 适配移动端 100vh 问题 */
-            min-height: -webkit-fill-available;
+            overflow-x: hidden;
             padding: 20px;
+            padding-top: calc(20px + env(safe-area-inset-top));
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            padding-left: calc(20px + env(safe-area-inset-left));
+            padding-right: calc(20px + env(safe-area-inset-right));
             transition: padding 0.3s;
         }
 
         body.view-mobile {
-            padding: 0 0 0 36px;
-            /* 左侧留出空间给切换按钝 */
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) calc(36px + env(safe-area-inset-left));
             background-color: #fff;
         }
 
         html {
-            height: -webkit-fill-available;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* 左侧固定切换开关 */
         .view-switcher {
             position: fixed;
-            left: 6px;
+            left: calc(6px + env(safe-area-inset-left));
             top: 50%;
             transform: translateY(-50%);
             background: #fff;
@@ -91,7 +94,7 @@
         /* 复制提示气泡 */
         #copyToast {
             position: fixed;
-            top: 20px;
+            top: calc(20px + env(safe-area-inset-top));
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.7);
@@ -292,7 +295,7 @@
         }
 
         .weekday {
-            color: var(--text-light);
+            color: var(--text-main);
             font-weight: 600;
             font-size: 0.9rem;
         }
@@ -775,7 +778,7 @@
         @media (max-width: 950px) {
             .app-container {
                 flex-direction: column;
-                max-width: 600px;
+                max-width: 100%;
             }
 
             .calendar-main {
@@ -845,11 +848,11 @@
                     </div>
                 </div>
                 <div class="nav-controls">
-                    <button class="btn-icon" onclick="engine.changeMonth(-12)">＜＜</button>
-                    <button class="btn-icon" onclick="engine.changeMonth(-1)">＜</button>
-                    <button class="btn-icon btn-today" onclick="engine.goToday()">今天</button>
-                    <button class="btn-icon" onclick="engine.changeMonth(1)">＞</button>
-                    <button class="btn-icon" onclick="engine.changeMonth(12)">＞＞</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(-12)" title="上年">⬅️</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(-1)" title="上月">⬆️</button>
+                    <button class="btn-icon btn-today" onclick="engine.goToday()">今</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(1)" title="下月">⬇️</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(12)" title="下年">➡️</button>
                 </div>
             </header>
 
@@ -948,6 +951,7 @@
                     "09-10": "教师节",
                     "09-30": "烈士纪念日",
                     "1949-10-01": "国庆节",
+                    "1911-10-10": "辛亥革命纪念日",
                     "12-13": "国家公祭日🕯(南京大屠杀死难者国家公祭日)",
                     "1893-12-26": "毛泽东🎂"
                 },
