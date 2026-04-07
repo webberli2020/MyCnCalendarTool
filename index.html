@@ -44,7 +44,8 @@
         }
 
         body.view-mobile {
-            padding: 0 0 0 36px; /* 左侧留出空间给切换按钝 */
+            padding: 0 0 0 36px;
+            /* 左侧留出空间给切换按钝 */
             background-color: #fff;
         }
 
@@ -112,7 +113,7 @@
             box-shadow: var(--shadow);
             display: grid;
             grid-template-columns: 1fr 320px;
-            grid-template-areas: 
+            grid-template-areas:
                 "main sidebar"
                 "almanac sidebar";
             overflow: hidden;
@@ -131,7 +132,8 @@
 
         .almanac {
             grid-area: almanac;
-            padding: 0 50px 40px 50px; /* 在桌面端，上下边距要协调 */
+            padding: 0 50px 40px 50px;
+            /* 在桌面端，上下边距要协调 */
             border-right: 1px solid var(--border-color);
         }
 
@@ -459,8 +461,15 @@
         }
 
         /* 休=红底白字，班=绿底白字（日历格子内显示国家简称） */
-        .status-badge.rest { background: #d32f2f; color: #ffffff; }
-        .status-badge.work { background: #2e7d32; color: #ffffff; }
+        .status-badge.rest {
+            background: #d32f2f;
+            color: #ffffff;
+        }
+
+        .status-badge.work {
+            background: #2e7d32;
+            color: #ffffff;
+        }
 
         /* 侧边栏：休=红底白字，班=绿底白字 */
         .side-status-badge {
@@ -474,8 +483,14 @@
             margin-right: 2px;
             vertical-align: middle;
         }
-        .side-status-badge.rest { background: #d32f2f; }
-        .side-status-badge.work { background: #2e7d32; }
+
+        .side-status-badge.rest {
+            background: #d32f2f;
+        }
+
+        .side-status-badge.work {
+            background: #2e7d32;
+        }
 
         /*================ 右侧边栏 ================*/
         .sidebar {
@@ -567,7 +582,7 @@
             flex: 1;
         }
 
-         /* 黄历宜忘模块（日历区域下方） */
+        /* 黄历宜忘模块（日历区域下方） */
         .almanac {
             display: flex;
             flex-direction: column;
@@ -586,8 +601,13 @@
             width: 100%;
         }
 
-        .almanac-col.yi { background: #f1f8e9; }
-        .almanac-col.ji { background: #fff4f4; }
+        .almanac-col.yi {
+            background: #f1f8e9;
+        }
+
+        .almanac-col.ji {
+            background: #fff4f4;
+        }
 
         .almanac-title {
             font-size: 1rem;
@@ -597,8 +617,13 @@
             min-width: 1.2em;
         }
 
-        .almanac-col.yi .almanac-title { color: var(--primary-green); }
-        .almanac-col.ji .almanac-title { color: var(--primary-red); }
+        .almanac-col.yi .almanac-title {
+            color: var(--primary-green);
+        }
+
+        .almanac-col.ji .almanac-title {
+            color: var(--primary-red);
+        }
 
         .almanac-txt {
             font-size: 0.8rem;
@@ -606,8 +631,14 @@
             flex: 1;
         }
 
-        .almanac-col.yi .almanac-txt { color: var(--primary-green); font-weight: 500; }
-        .almanac-col.ji .almanac-txt { color: var(--primary-red); }
+        .almanac-col.yi .almanac-txt {
+            color: var(--primary-green);
+            font-weight: 500;
+        }
+
+        .almanac-col.ji .almanac-txt {
+            color: var(--primary-red);
+        }
 
         /* 假日及补班样式 */
         .day-cell.holiday .day-num {
@@ -656,11 +687,12 @@
         }
 
         .view-mobile .almanac {
-            order: 3; /* 将宜忌移至侧边栏（及节日）下方 */
+            order: 3;
+            /* 将宜忌移至侧边栏下方 */
             border-right: none;
             padding: 15px 10px;
             background: #fff;
-            margin-top: 0;
+            margin-top: 8px;
         }
 
         .view-mobile .calendar-header {
@@ -720,13 +752,7 @@
             border-right: none;
         }
 
-        .view-mobile .sidebar {
-            width: 100%;
-            padding: 15px 10px;
-            border-top: 1px solid var(--border-color);
-            order: 6;
-            background: #fdfdfd;
-        }
+
 
         .view-mobile .day-cell {
             min-height: 60px;
@@ -745,10 +771,6 @@
             display: none;
         }
 
-        .view-mobile .almanac {
-            order: 6;  /* 排在 calendar-grid(order:5) 之后，显示在日历下方 */
-            margin-top: 8px;
-        }
 
         @media (max-width: 950px) {
             .app-container {
@@ -1080,12 +1102,14 @@
                 for (let y = 1900; y <= 2100; y++) {
                     const opt = document.createElement('option');
                     opt.value = y;
-                    opt.innerText = y + '年';
 
                     const leapMonth = LunarYear.fromYear(y).getLeapMonth();
                     if (leapMonth > 0) {
-                        opt.style.color = 'var(--primary-blue)';
+                        opt.innerText = y + '年 (闰' + leapMonth + ')';
+                        opt.style.color = 'var(--primary-red)';
                         opt.style.fontWeight = 'bold';
+                    } else {
+                        opt.innerText = y + '年';
                     }
 
                     select.appendChild(opt);
@@ -1151,12 +1175,34 @@
                     const test1 = Lunar.fromSolar(Solar.fromYmd(year, i + 1, 5)).getMonth() < 0;
                     const test2 = Lunar.fromSolar(Solar.fromYmd(year, i + 1, 25)).getMonth() < 0;
                     if (test1 || test2) {
-                        monthSelectOpts[i].style.color = 'var(--primary-blue)';
+                        monthSelectOpts[i].style.color = 'var(--primary-red)';
                         monthSelectOpts[i].style.fontWeight = 'bold';
+                        monthSelectOpts[i].innerText = (i + 1) + '月 (含闰)';
                     } else {
                         monthSelectOpts[i].style.color = '';
                         monthSelectOpts[i].style.fontWeight = '';
+                        monthSelectOpts[i].innerText = (i + 1) + '月';
                     }
+                }
+
+                // 也让下拉框本身在选中特殊项时具有高亮颜色
+                const leapMonth = LunarYear.fromYear(year).getLeapMonth();
+                const yearSelectEl = document.getElementById('yearSelect');
+                if (leapMonth > 0) {
+                    yearSelectEl.style.color = 'var(--primary-red)';
+                    yearSelectEl.style.fontWeight = 'bold';
+                } else {
+                    yearSelectEl.style.color = '';
+                    yearSelectEl.style.fontWeight = '';
+                }
+
+                const monthSelectEl = document.getElementById('monthSelect');
+                if (monthSelectOpts[month].innerText.includes('含闰')) {
+                    monthSelectEl.style.color = 'var(--primary-red)';
+                    monthSelectEl.style.fontWeight = 'bold';
+                } else {
+                    monthSelectEl.style.color = '';
+                    monthSelectEl.style.fontWeight = '';
                 }
 
                 this.renderHeaders();
