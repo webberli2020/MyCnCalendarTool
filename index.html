@@ -91,22 +91,6 @@
             color: #fff;
         }
 
-        /* 复制提示气泡 */
-        #copyToast {
-            position: fixed;
-            top: calc(20px + env(safe-area-inset-top));
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
 
         .app-container {
             width: 100%;
@@ -125,7 +109,8 @@
 
         .calendar-main {
             grid-area: main;
-            padding: 40px 50px;
+            padding: 40px 50px 1px 50px;
+            /*padding4个参数分别控制：上、右、下、左*/
             border-right: 1px solid var(--border-color);
         }
 
@@ -159,14 +144,6 @@
             width: 100%;
         }
 
-        .kb-hint {
-            font-size: 0.8rem;
-            color: var(--text-sec);
-            background: #f8f9fa;
-            padding: 3px 8px;
-            border-radius: 4px;
-            border: 1px solid #eee;
-        }
 
         .other-fest-toggle {
             display: flex;
@@ -194,7 +171,7 @@
 
         .date-status {
             font-size: 1.1rem;
-            color: var(--text-sec);
+            color: #7f8c8d;
             white-space: nowrap;
             font-weight: 600;
             margin-right: 15px;
@@ -212,12 +189,6 @@
             /* 深蓝色 */
         }
 
-        .month-lbl {
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: var(--text-main);
-            line-height: 1;
-        }
 
         .year-lbl-box {
             display: flex;
@@ -245,12 +216,6 @@
             color: var(--text-main);
         }
 
-        .date-status {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-left: 15px;
-            font-weight: 400;
-        }
 
         .nav-controls {
             display: flex;
@@ -354,6 +319,7 @@
 
         .lunar-info.jieqi,
         .lunar-info.chuyi {
+            font-size: 0.90rem;
             font-weight: bold;
             /* 节气和初一加粗 */
         }
@@ -510,7 +476,7 @@
         }
 
         .big-day {
-            font-size: 6rem;
+            font-size: 4rem;
             font-weight: 900;
             color: var(--primary-red);
             line-height: 0.9;
@@ -585,12 +551,12 @@
             flex: 1;
         }
 
-        /* 黄历宜忘模块（日历区域下方） */
+        /* 黄历宜忌模块（日历区域下方） */
         .almanac {
             display: flex;
             flex-direction: column;
             gap: 6px;
-            margin-top: 12px;
+            margin-top: 1px;
             width: 100%;
         }
 
@@ -657,8 +623,18 @@
             margin-top: 30px;
             text-align: center;
             font-size: 0.8rem;
-            color: #d1d8e0;
+            color: #0887ef;
             letter-spacing: 1px;
+            /* Added for desktop layout consistency after moving out of sidebar */
+            grid-area: sidebar;
+            align-self: flex-end;
+            padding-bottom: 40px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .footer * {
+            pointer-events: auto;
         }
 
         /* 强制手机端布局逻辑 */
@@ -676,7 +652,7 @@
         .view-mobile .calendar-main {
             order: 1;
             border-right: none;
-            padding: 15px 10px;
+            padding: 15px 10px 5px 10px;
             display: flex;
             flex-direction: column;
         }
@@ -687,15 +663,29 @@
             padding: 15px 10px;
             border-top: 1px solid var(--border-color);
             background: #fdfdfd;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            /* 添加这个让sidebar占据剩余空间 */
         }
 
         .view-mobile .almanac {
             order: 3;
-            /* 将宜忌移至侧边栏下方 */
+            /* 关键：设置order为3，确保在sidebar之后 */
             border-right: none;
-            padding: 15px 10px;
+            padding: 10px 10px;
             background: #fff;
-            margin-top: 8px;
+            margin-top: 0;
+        }
+
+        .view-mobile .footer {
+            order: 4;
+            /* 确保footer在almanac之后 */
+            grid-area: auto;
+            align-self: auto;
+            margin-top: 20px;
+            margin-bottom: calc(10px + env(safe-area-inset-bottom));
+            flex-shrink: 0;
         }
 
         .view-mobile .calendar-header {
@@ -734,9 +724,6 @@
             order: 3;
         }
 
-        .view-mobile .kb-hint {
-            order: 4;
-        }
 
         .view-mobile .nav-controls {
             order: 3;
@@ -773,6 +760,7 @@
         .view-mobile .holiday-list {
             display: none;
         }
+
 
 
         @media (max-width: 950px) {
@@ -823,7 +811,6 @@
 
 <body>
 
-    <div id="copyToast">内容已复制到剪贴板</div>
 
     <div class="view-switcher">
         <button id="btnPC" onclick="engine.setMode('pc')">电脑端</button>
@@ -848,11 +835,11 @@
                     </div>
                 </div>
                 <div class="nav-controls">
-                    <button class="btn-icon" onclick="engine.changeMonth(-12)" title="上年">⬅️</button>
-                    <button class="btn-icon" onclick="engine.changeMonth(-1)" title="上月">⬆️</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(-12)" title="上年">⬇️</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(-1)" title="上月">⬅️</button>
                     <button class="btn-icon btn-today" onclick="engine.goToday()">今</button>
-                    <button class="btn-icon" onclick="engine.changeMonth(1)" title="下月">⬇️</button>
-                    <button class="btn-icon" onclick="engine.changeMonth(12)" title="下年">➡️</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(1)" title="下月">️➡️</button>
+                    <button class="btn-icon" onclick="engine.changeMonth(12)" title="下年">⬆️</button>
                 </div>
             </header>
 
@@ -914,9 +901,8 @@
                     <span class="detail-festivals" id="sideFestivals">无节日</span>
                 </div>
             </div>
-
-            <div class="footer">中●巴●美 极简万年历 · Webber匠心打造</div>
         </aside>
+        <div class="footer">中●巴●美 极简万年历 Webber匠心打造</div>
     </div>
 
     <script>
@@ -927,8 +913,9 @@
             START_DAY: 1,              // 每周起始日：1-6代表周一至周六，7代表周日
             ZODIAC_BY_LICHUN: false,   // 生肖切换：false=以春节切换；true=以立春切换
             SHOW_OTHER_MONTH_DAYS: false, // 是否显示非本月日期预览
-            LOCAL: 'BR',               // 本地休假日地区选项：'CN' (中国), 'BR' (巴西), 'US' (美国)
-            SHOW_LOCAL_HOLIDAY_ONLY: false// 当为true时，日历格子仅显示LOCAL配置项对应国家的休班标识
+            LOCAL: 'BR',              // 本地休假日地区选项：'CN' (中国), 'BR' (巴西), 'US' (美国)
+            SHOW_LOCAL_HOLIDAY_ONLY: true, // 当为true时，日历格子仅显示LOCAL配置项对应国家的休班标识
+            SLICE_YI_JI: 8 // 宜忌显示的数量，可以根据需要调整 
         };
 
         /**
@@ -1619,7 +1606,7 @@
                     dynamicBR[mmdd] = "感恩节(Dia de Ação de Graças,受美国感恩节文化影响于1949年设立,侧重宗教仪式和家庭团,表达对过去一年收获与祝福的感恩之情)";
                 }
 
-                if (dynamicBR[mmdd]) list.push({ name: "巴·" + dynamicBR[mmdd], css: "tag-green" });
+                if (dynamicBR[mmdd]) list.push({ name: "巴·" + dynamicBR[mmdd], css: "tag-brazil" });
 
                 // 美国浮动
                 const dynamicUS = {};
@@ -1861,80 +1848,17 @@
                     const yi = lunar.getDayYi();
                     const ji = lunar.getDayJi();
 
-                    //显示黄历中的宜忌事项，将数组中的前6项显示在页面上(后改为全部显示)，如果没有则显示默认文字
-                    //document.getElementById('sideYi').innerText = yi && yi.length > 0 ? yi.slice(0, 6).join(' ') : '诸事不宜';
-                    document.getElementById('sideYi').innerText = yi && yi.length > 0 ? yi.join(' ') : '诸事不宜';
-                    document.getElementById('sideJi').innerText = ji && ji.length > 0 ? ji.join(' ') : '无所忌讳';
+                    //显示黄历中的宜忌事项，根据配置项选择全部显示还是部分显示；如果没有则显示默认文字
+                    const sliceVal = CONFIG.SLICE_YI_JI || 0;
+                    document.getElementById('sideYi').innerText = yi && yi.length > 0 ? (sliceVal > 0 ? yi.slice(0, sliceVal).join(' ') : yi.join(' ')) : '诸事不宜';
+                    document.getElementById('sideJi').innerText = ji && ji.length > 0 ? (sliceVal > 0 ? ji.slice(0, sliceVal).join(' ') : ji.join(' ')) : '无所忌讳';
+
+
                 } catch (e) {
                     document.getElementById('sideYi').innerText = '解除 动土 祭祀';
                     document.getElementById('sideJi').innerText = '嫁娶 出行 入宅';
                 }
 
-                // 复制到剪贴板
-                this.copyDetailsToClipboard();
-            }
-
-            copyDetailsToClipboard() {
-                const day = document.getElementById('sideDayNum').innerText;
-                const week = document.getElementById('sideWeekday').innerText;
-                const fullDate = document.getElementById('sideFullDate').innerText;
-                const lunar = document.getElementById('sideLunar').innerText;
-                const pillars = document.getElementById('sidePillars').innerText;
-                const zodiac = document.getElementById('sideZodiac').innerText;
-                const holidayStatus = document.getElementById('sideHolidayStatus').innerText;
-                const festivals = document.getElementById('sideFestivals').innerText.replace(/\n\s+/g, '\n').trim();
-                const yi = document.getElementById('sideYi').innerText;
-                const ji = document.getElementById('sideJi').innerText;
-
-                let leapContext = '';
-                const rowLeap = document.getElementById('rowLeapContext');
-                if (rowLeap.style.display !== 'none') {
-                    leapContext = `\n					闰纪：${document.getElementById('sideLeapContext').innerText.replace(/\n/, '，')}`;
-                }
-
-                const text = `【日期详情】
-					阳历：${fullDate} ${week}
-					农历：${lunar}
-					干支：${pillars}
-					生肖：${zodiac}${leapContext}
-					周数：${document.getElementById('dateStatus').innerText}
-					假期：${holidayStatus}
-					节日：${festivals}
-					宜：${yi}
-					忌：${ji}`;
-
-                this.doCopy(text);
-            }
-
-            doCopy(text) {
-                try {
-                    const textArea = document.createElement("textarea");
-                    textArea.value = text;
-                    // 防止在页面上产生滚动
-                    textArea.style.position = "fixed";
-                    textArea.style.left = "-9999px";
-                    textArea.style.top = "0";
-                    document.body.appendChild(textArea);
-                    textArea.focus();
-                    textArea.select();
-
-                    const successful = document.execCommand('copy');
-                    document.body.removeChild(textArea);
-
-                    if (successful) {
-                        this.showToast();
-                    }
-                } catch (err) {
-                    console.error('无法复制: ', err);
-                }
-            }
-
-            showToast() {
-                const toast = document.getElementById('copyToast');
-                toast.style.opacity = '1';
-                setTimeout(() => {
-                    toast.style.opacity = '0';
-                }, 1500);
             }
 
             formatDate(date, fmt) {
@@ -1982,10 +1906,13 @@
             }
 
             renderStatusBadge(container, date) {
-                const statuses = this.getGlobalHolidayStatus(date, CONFIG.SHOW_LOCAL_HOLIDAY_ONLY);
+                const showOnlyLocal = CONFIG.SHOW_LOCAL_HOLIDAY_ONLY;
+                const statuses = this.getGlobalHolidayStatus(date, showOnlyLocal);
                 statuses.forEach(s => {
-                    // 日历格子内显示国家简称（中/巴/美），红底=休，绿底=班
-                    this.addBadge(container, s.shortText, s.type);
+                    // 如果只显示本地假期，显示“休/班”文字；由于CSS中 rest=红底, work=绿底，颜色会自动适配
+                    // 如果显示全球假期，则显示国家简称（中/巴/美）
+                    const badgeText = showOnlyLocal ? (s.type === 'rest' ? '休' : '班') : s.shortText;
+                    this.addBadge(container, badgeText, s.type);
                 });
             }
 
